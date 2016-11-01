@@ -1,3 +1,25 @@
+## react-bootstrap-exemplo
+
+How to creat one react + react-bootstrap + lodash and library in one clean aplication with creat-react-app
+
+## 1- Create-react-app installation
+
+Install it once globally:
+```
+  -npm install -g create-react-app
+```
+### Creating an App
+
+To create a new app, run:
+```
+create-react-app react-bootstrap-exemplo && cd react-bootstrap-exemplo
+npm start
+```
+Then open [http://localhost:3000/](http://localhost:3000/) to see your app.<br>
+When you’re ready to deploy to production, create a minified bundle with `npm run build`.
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
