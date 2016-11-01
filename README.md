@@ -27,7 +27,7 @@ This project is an React page that accesses a "MQTT" server, that accesses the "
 
 Access the site [NodeJS][3]
 
-Download the latest LTS version, follow with the default installation. In this example I used the "node-v4.4.5-x64"
+Download the latest LTS version, follow with the default installation. In this example I used the "node-v6.9.1-x64"
 
 Now install the **phyton**. In this tutorial I used [python-2.7.10][8]
 
