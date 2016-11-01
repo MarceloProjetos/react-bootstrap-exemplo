@@ -18,6 +18,46 @@ npm start
 Then open [http://localhost:3000/](http://localhost:3000/) to see your app.<br>
 When you’re ready to deploy to production, create a minified bundle with `npm run build`.
 
+## 2- Adding Bootstrap
+
+Install React Bootstrap and Bootstrap from NPM. React Bootstrap does not include Bootstrap CSS so this needs to be installed as well:
+
+```
+npm install react-bootstrap --save
+npm install bootstrap@3 --save
+npm install react-bootstrap-date-picker --save
+```
+
+Import Bootstrap CSS and optionally Bootstrap theme CSS in the ```src/index.js``` file:
+
+```js
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap-theme.css';
+```
+
+Import required React Bootstrap components within ```src/App.js``` file or your custom component files:
+
+```js
+import { Navbar, Jumbotron, Button } from 'react-bootstrap';
+```
+
+Now you are ready to use the imported React Bootstrap components within your component hierarchy defined in the render method.
+
+## 3- Adding mqtt, lodash and node-uuid
+
+MQTT.js is a client library for the [MQTT](http://mqtt.org/) protocol, written
+in JavaScript for node.js and the browser.
+```
+npm install mqtt --save
+```
+node-uuid simple, fast generation of [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) UUIDS.
+```
+npm install node-uuid --save
+```
+```
+npm install react-bootstrap-date-picker --save
+```
+
 ---
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
