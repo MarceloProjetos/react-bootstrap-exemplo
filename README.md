@@ -3,6 +3,14 @@ React-bootstrap-exemplo
 
 How to creat one react + react-bootstrap + lodash and library in one clean aplication with creat-react-app
 
+#Structure of Project
+![alt tag](https://github.com/MarceloProjetos/react-bootstrap-exemplo/blob/master/images/estrutura.png)
+
+This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the records.
+
+#MQTT structure of Topics names
+![alt tag](https://github.com/MarceloProjetos/react-bootstrap-exemplo/blob/master/images/create topics.png)
+
 # Install environment
 
 ### To setup this project we need to the free softwares below:
@@ -111,15 +119,7 @@ To verify that it is installed as a service see:
 
     Control Panel-->Administrative tools-->Services and look for **ActiveMQ**
     
-#MQTT structure of Topics names
-![alt tag](https://github.com/MarceloProjetos/react-bootstrap-exemplo/blob/master/images/create topics.png)
-
 ----
-
-#Structure of Project
-![alt tag](https://github.com/MarceloProjetos/react-bootstrap-exemplo/blob/master/images/estrutura.png)
-
-This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
 
 ## 5-Node-red
 
@@ -153,6 +153,267 @@ Click "OK" and position the flow where to find, the better.
 Check out http://nodered.org/docs/getting-started/ for full instructions on getting started.
 
 Below you will find some information on how to perform common tasks.
+
+##5-Configuring access of node-red across settings.js
+
+**DNS**
+There are two ways to access a page on the Internet: the domain name "DNS" or "IP ADDRESS" of the servers on which it is hosted. In our case "Node-RED."
+
+For your application to make a simple DNS access or "IP ADDRESS". We need to edit the [settings.js][9] file.
+
+    user folder...\AppData\Roaming\npm\node_modules\node-red\settings.js
+or 
+
+    user folder...\.node-red\settings.js
+
+The first thing that changed is the node-red port. Change 8080 to 80 as below:
+
+    uiPort: process.env.PORT || 80,
+    
+The second change was uncomment the line 
+
+    httpAdminRoot: '/admin',
+    
+Now save the "settings.js" and restart **node-red**
+    
+With this change your page application its goes::
+
+    http://127.0.0.1:80
+    
+And now to access your **node-red flow** enter in:
+
+    http://127.0.0.1:80/admin/
+
+And now it is easy to configure your DNS server, for directly access your application. And remember now to access your flow is "IP/admin"!
+
+Now you can create an ALIAS on your DNS server for the IP Project.
+
+| NAME          |   TYPE        |   TARGET      |
+| --------      | -----------   |-----------    |
+| example.com   |      A        | 192.168.0.X   |
+
+___
+##6- PASSWORD in node-red flow
+
+To protect your **node-red flow**, you can enable password. 
+
+The first thing enter the **node_modules** directory:
+
+    ....\AppData\Roaming\npm\node_modules
+
+You need to make a key with this commnand and put your **password**:
+
+    node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" your-password-here
+
+Now save result number and edit the file settings.js again.
+
+ ```sh
+ /**
+ * Copyright 2013, 2016 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+
+// The `https` setting requires the `fs` module. Uncomment the following
+// to make it available:
+//var fs = require("fs");
+
+module.exports = {
+    // the tcp port that the Node-RED web server is listening on
+    uiPort: process.env.PORT || 80,
+
+    // By default, the Node-RED UI accepts connections on all IPv4 interfaces.
+    // The following property can be used to listen on a specific interface. For
+    // example, the following would only allow connections from the local machine.
+    //uiHost: "127.0.0.1",
+
+    // Retry time in milliseconds for MQTT connections
+    mqttReconnectTime: 15000,
+
+    // Retry time in milliseconds for Serial port connections
+    serialReconnectTime: 15000,
+
+    // Retry time in milliseconds for TCP socket connections
+    //socketReconnectTime: 10000,
+
+    // Timeout in milliseconds for TCP server socket connections
+    //  defaults to no timeout
+    //socketTimeout: 120000,
+
+    // Timeout in milliseconds for HTTP request connections
+    //  defaults to 120 seconds
+    //httpRequestTimeout: 120000,
+
+    // The maximum length, in characters, of any message sent to the debug sidebar tab
+    debugMaxLength: 1000,
+
+    // The file containing the flows. If not set, it defaults to flows_<hostname>.json
+    //flowFile: 'flows.json',
+
+    // To enabled pretty-printing of the flow within the flow file, set the following
+    //  property to true:
+    //flowFilePretty: true,
+
+    // By default, all user data is stored in the Node-RED install directory. To
+    // use a different location, the following property can be used
+    //userDir: '/home/nol/.node-red/',
+
+    // Node-RED scans the `nodes` directory in the install directory to find nodes.
+    // The following property can be used to specify an additional directory to scan.
+    //nodesDir: '/home/nol/.node-red/nodes',
+
+    // By default, the Node-RED UI is available at http://localhost:1880/
+    // The following property can be used to specifiy a different root path.
+    // If set to false, this is disabled.
+    httpAdminRoot: '/admin',
+
+    // Some nodes, such as HTTP In, can be used to listen for incoming http requests.
+    // By default, these are served relative to '/'. The following property
+    // can be used to specifiy a different root path. If set to false, this is
+    // disabled.
+    //httpNodeRoot: '/red-nodes',
+
+    // The following property can be used in place of 'httpAdminRoot' and 'httpNodeRoot',
+    // to apply the same root to both parts.
+    //httpRoot: '/red',
+
+    // When httpAdminRoot is used to move the UI to a different root path, the
+    // following property can be used to identify a directory of static content
+    // that should be served at http://localhost:1880/.
+    //httpStatic: '/home/nol/node-red-static/',
+
+    // Securing Node-RED
+    // -----------------
+    // To password protect the Node-RED editor and admin API, the following
+    // property can be used. See http://nodered.org/docs/security.html for details.
+    adminAuth: {
+        type: "credentials",
+        users: [{
+           username: "admin",
+            password: "$2a$08$tIP24A6fn9F9DH30OwunG.4dWSO7sJk/YvbabyvKY1ej9DN0GrCLe",
+            permissions: "*"
+        }]
+    },
+
+    // To password protect the node-defined HTTP endpoints (httpNodeRoot), or 
+    // the static content (httpStatic), the following properties can be used.
+    // The pass field is a bcrypt hash of the password.
+    // See http://nodered.org/docs/security.html#generating-the-password-hash
+    //httpNodeAuth: {user:"user",pass:"$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN."},
+    //httpStaticAuth: {user:"user",pass:"$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN."},
+
+    // The following property can be used to enable HTTPS
+    // See http://nodejs.org/api/https.html#https_https_createserver_options_requestlistener
+    // for details on its contents.
+    // See the comment at the top of this file on how to load the `fs` module used by
+    // this setting.
+    //
+    //https: {
+    //    key: fs.readFileSync('privatekey.pem'),
+    //    cert: fs.readFileSync('certificate.pem')
+    //},
+
+    // The following property can be used to disable the editor. The admin API
+    // is not affected by this option. To disable both the editor and the admin
+    // API, use either the httpRoot or httpAdminRoot properties
+    //disableEditor: false,
+
+    // The following property can be used to configure cross-origin resource sharing
+    // in the HTTP nodes.
+    // See https://github.com/troygoode/node-cors#configuration-options for
+    // details on its contents. The following is a basic permissive set of options:
+    //httpNodeCors: {
+    //    origin: "*",
+    //    methods: "GET,PUT,POST,DELETE"
+    //},
+
+    // If you need to set an http proxy please set an environment variable
+    // called http_proxy (or HTTP_PROXY) outside of Node-RED in the operating system.
+    // For example - http_proxy=http://myproxy.com:8080
+    // (Setting it here will have no effect)
+    // You may also specify no_proxy (or NO_PROXY) to supply a comma separated
+    // list of domains to not proxy, eg - no_proxy=.acme.co,.acme.co.uk
+
+    // The following property can be used to add a custom middleware function
+    // in front of all http in nodes. This allows custom authentication to be
+    // applied to all http in nodes, or any other sort of common request processing.
+    //httpNodeMiddleware: function(req,res,next) {
+    //   // Handle/reject the request, or pass it on to the http in node
+    //   // by calling next();
+    //   next();
+    //},
+
+    // Anything in this hash is globally available to all functions.
+    // It is accessed as context.global.
+    // eg:
+    //    functionGlobalContext: { os:require('os') }
+    // can be accessed in a function block as:
+    //    context.global.os
+
+    functionGlobalContext: {
+        // os:require('os'),
+        // octalbonescript:require('octalbonescript'),
+        // jfive:require("johnny-five"),
+        // j5board:require("johnny-five").Board({repl:false})
+    },
+
+    // The following property can be used to order the categories in the editor
+    // palette. If a node's category is not in the list, the category will get
+    // added to the end of the palette.
+    // If not set, the following default order is used:
+    //paletteCategories: ['subflows', 'input', 'output', 'function', 'social', 'mobile', 'storage', 'analysis', 'advanced'],
+
+    // Configure the logging output
+    logging: {
+        // Only console logging is currently supported
+        console: {
+            // Level of logging to be recorded. Options are:
+            // fatal - only those errors which make the application unusable should be recorded
+            // error - record errors which are deemed fatal for a particular request + fatal errors
+            // warn - record problems which are non fatal + errors + fatal errors
+            // info - record information about the general running of the application + warn + error + fatal errors
+            // debug - record information which is more verbose than info + info + warn + error + fatal errors
+            // trace - record very detailed logging + debug + info + warn + error + fatal errors
+            level: "info",
+            // Whether or not to include metric events in the log output
+            metrics: false,
+            // Whether or not to include audit events in the log output
+            audit: false
+        }
+    }
+}
+ ```
+
+Find and uncomment the lines as bellow and place the generated password on the line.
+
+    adminAuth: {
+        type: "credentials",
+        users: [{
+           username: "admin",
+            password: "your generated password",
+            permissions: "*"
+        }]
+    },
+
+Now save the "settings.js" and restart **node-red**
+
+When you come back to:
+
+    http://127.0.0.1:80/admin/
+
+![alt tag](https://github.com/MarceloProjetos/react-bootstrap-exemplo/blob/master/images/node-red_login.png)
+
+Put username: "admin" and password: 
 
 ## 6-Installation MongoDB
 
@@ -304,9 +565,8 @@ pxa255@gmail.com
 [6]:http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 [7]:http://www.pipo-store.com/pipo-x9-tv-box-8-9-inch-mini-pc.html
 [8]:https://www.python.org/downloads/release/python-2712/
-[9]:https://github.com/MarceloProjetos/HMI-controler-with-node-red/blob/master/NodeRed/settings.js
 [10]:https://tortoisegit.org/
 [11]:http://www.7-zip.org/
 [12]:https://www.sublimetext.com/
 [13]:https://packagecontrol.io/installation
-[14]:http://gulpjs.com/plugins/
+
