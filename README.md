@@ -526,6 +526,14 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
+The build folder is ready to be deployed.
+You may also serve it locally with a static server:
+```
+  npm install -g pushstate-server
+  pushstate-server build
+```
+Open http://localhost:9000
+
 ---
 
 
