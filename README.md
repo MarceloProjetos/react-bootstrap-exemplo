@@ -50,12 +50,14 @@ in JavaScript for node.js and the browser.
 ```
 npm install mqtt --save
 ```
-node-uuid simple, fast generation of [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) UUIDS.
+Node-uuid simple, fast generation of [RFC4122](http://www.ietf.org/rfc/rfc4122.txt) UUIDS.
 ```
 npm install node-uuid --save
 ```
+Lodash makes JavaScript easier by taking the hassle out of working with arrays,
+numbers, objects, strings, etc.
 ```
-npm install react-bootstrap-date-picker --save
+npm install lodash --save
 ```
 
 ---
