@@ -15,8 +15,8 @@ import {
   Checkbox,
   Tooltip,
 } from 'react-bootstrap';
-import DatePicker from 'react-bootstrap-date-picker';
 
+import DatePicker from 'react-bootstrap-date-picker';
 import uuid from 'node-uuid';
 import { assign, omit } from 'lodash';
 import mqtt from 'mqtt/lib/connect';
@@ -82,7 +82,7 @@ export default class LancamentoForm extends Component {
       //let topics = {};
 
       this.client.subscribe(
-        'financeiro/duplicata/erros/' + opts.clientId, 
+        'financeiro/cadastro/erros/' + opts.clientId, 
         function(err, granted) { 
           !err ? 
             this.setState({
@@ -91,13 +91,13 @@ export default class LancamentoForm extends Component {
         }.bind(this)
       );
 
-      //this.client.subscribe('financeiro/duplicata/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
 
     }.bind(this));
     
@@ -152,7 +152,7 @@ export default class LancamentoForm extends Component {
 
   handleSave(data) {
     //alert(JSON.stringify(this.state, null, 2));
-    this.client.subscribe('financeiro/duplicata/alterado/' + this.state._id, function(err, granted) {
+    this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
       if (err) {
         console.log('Erro ao se inscrever no topico: ' + granted[0].topic)
       } else {
@@ -160,7 +160,7 @@ export default class LancamentoForm extends Component {
           {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
           this.client.publish.bind(
             this.client, 
-            'financeiro/duplicata/alterar/' + this.props.clientId, 
+            'financeiro/cadastro/alterar/' + this.props.clientId, 
             JSON.stringify(omit(this.state, 'topics'))
           )  
         );
@@ -216,7 +216,7 @@ export default class LancamentoForm extends Component {
 
                     <OverlayTrigger 
                       placement="top" 
-                      overlay={(<Tooltip id="tooltip">Cadastrar uma Conta Corrente</Tooltip>)}
+                      overlay={(<Tooltip id="tooltip">Cadastrar nova Contas</Tooltip>)}
                     >
                         <Button
                           bsSize="large"
@@ -272,44 +272,6 @@ export default class LancamentoForm extends Component {
 
                     <OverlayTrigger 
                       placement="top" 
-                      overlay={(<Tooltip id="tooltip">Calcular Datas das Parcelas</Tooltip>)}
-                    >
-
-                        <Button
-                          bsSize="large"
-                          onClick={this.handleCalc}
-                          style={{width: 100}}
-                        >
-                          <Glyphicon glyph="calendar" />
-                          <div><span>Calcular</span></div>
-                        </Button>
-
-                    </OverlayTrigger>
-
-                  </Col>
-                  <Col xs={6} md={2} >
-
-                    <OverlayTrigger 
-                      placement="top" 
-                      overlay={(<Tooltip id="tooltip">Consultar Conta</Tooltip>)}
-                    >
-
-                        <Button
-                          bsSize="large"
-                          onClick={this.handleSearch}
-                          style={{width: 100}}
-                        >
-                          <Glyphicon glyph="search" />
-                          <div><span>Buscar</span></div>
-                        </Button>
-
-                    </OverlayTrigger>
-
-                  </Col>
-                  <Col xs={6} md={2} >
-
-                    <OverlayTrigger 
-                      placement="top" 
                       overlay={(<Tooltip id="tooltip">Excluir esta Conta</Tooltip>)}
                     >
                         <Button
@@ -322,6 +284,29 @@ export default class LancamentoForm extends Component {
                           <div><span>Excluir</span></div>
                         </Button>
 
+                    </OverlayTrigger>
+
+                  </Col>
+                  <Col xs={6} md={2} >
+                    <div>
+                      <span>      
+                      </span>
+                    </div>
+                  </Col>
+                  <Col xs={6} md={2} >
+
+                    <OverlayTrigger 
+                      placement="top" 
+                      overlay={(<Tooltip id="tooltip">Cadastrar nova Contas</Tooltip>)}
+                    >
+                        <Button
+                          bsSize="large"
+                          onClick={this.handleInsert}
+                          style={{width: 100}}
+                        >
+                          <Glyphicon glyph="plus" />
+                          <div><span>Nova</span></div>
+                        </Button>
                     </OverlayTrigger>
 
                   </Col>
@@ -401,7 +386,7 @@ export default class LancamentoForm extends Component {
                         <tr>
                           <th>#</th>
                           <th>Data</th>
-                          <th>Valor da Duplicata</th>
+                          <th>Valor da cadastro</th>
                         </tr>
                       </thead>
                       <tbody>

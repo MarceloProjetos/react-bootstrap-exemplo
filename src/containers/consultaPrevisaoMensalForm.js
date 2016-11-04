@@ -82,7 +82,7 @@ export default class LancamentoForm extends Component {
       //let topics = {};
 
       this.client.subscribe(
-        'financeiro/duplicata/erros/' + opts.clientId, 
+        'financeiro/consulta/erros/' + opts.clientId, 
         function(err, granted) { 
           !err ? 
             this.setState({
@@ -91,13 +91,13 @@ export default class LancamentoForm extends Component {
         }.bind(this)
       );
 
-      //this.client.subscribe('financeiro/duplicata/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/consulta/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
 
     }.bind(this));
     
@@ -152,7 +152,7 @@ export default class LancamentoForm extends Component {
 
   handleSave(data) {
     //alert(JSON.stringify(this.state, null, 2));
-    this.client.subscribe('financeiro/duplicata/alterado/' + this.state._id, function(err, granted) {
+    this.client.subscribe('financeiro/consulta/alterado/' + this.state._id, function(err, granted) {
       if (err) {
         console.log('Erro ao se inscrever no topico: ' + granted[0].topic)
       } else {
@@ -160,7 +160,7 @@ export default class LancamentoForm extends Component {
           {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
           this.client.publish.bind(
             this.client, 
-            'financeiro/duplicata/alterar/' + this.props.clientId, 
+            'financeiro/consulta/alterar/' + this.props.clientId, 
             JSON.stringify(omit(this.state, 'topics'))
           )  
         );
@@ -208,7 +208,7 @@ export default class LancamentoForm extends Component {
 
             <h4>ClientId: {this.props.clientId}</h4>
 
-            <Panel header={'Cadastro de Conta Corrente'} bsStyle="primary" >
+            <Panel header={'Posição Mensal'} bsStyle="primary" >
 
 
                 <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
@@ -401,7 +401,7 @@ export default class LancamentoForm extends Component {
                         <tr>
                           <th>#</th>
                           <th>Data</th>
-                          <th>Valor da Duplicata</th>
+                          <th>Valor da consulta</th>
                         </tr>
                       </thead>
                       <tbody>

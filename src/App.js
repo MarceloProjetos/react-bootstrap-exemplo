@@ -10,11 +10,25 @@ import {
   Nav, 
   NavDropdown,
   MenuItem, 
-  Jumbotron
+  Jumbotron,
+  Alert,
+  Button,
 } from 'react-bootstrap';
 
-import BancoForm from './containers/cadastroContasForm';
-import LancamentoForm from './containers/cadastroSociosForm';
+import CadastroContas     from './containers/cadastroContasForm';
+import CadastroSocios     from './containers/cadastroSociosForm';
+
+import MovimentoInclusao  from './containers/lancamentoInclusaoForm';
+import MovimentoSocios    from './containers/lancamentoSociosForm';
+import AtualizaMovimentos from './containers/lancamentoAtualizaForm';
+
+import PrevisaoDiaria     from './containers/consultaPrevisaoDiariaForm';
+import PrevisaoMensal     from './containers/consultaPrevisaoMensalForm';
+import CalculoPrevisao    from './containers/consultaCalculoForm';
+import PosicaoBancaria    from './containers/consultaPosicaoBancariaForm';
+import PosicaoPeriodo     from './containers/consultaPosicaoPeriodoForm';
+
+
 
 export default class App extends Component {
   constructor(props) {
@@ -40,13 +54,13 @@ export default class App extends Component {
         this.setState(
           {
             form: 
-              <BancoForm 
+              <CadastroSocios 
                 clientId={this.state.clientId}
                 nome="Cadastro de Socios"
                 onClose={this.handleClose.bind(this)} 
               >
-                  <span>this is a children component</span>
-              </BancoForm> 
+                  <span>Algo deu errado para achar o form CadastroContas</span>
+              </CadastroSocios> 
           }
         )
         break;
@@ -54,21 +68,149 @@ export default class App extends Component {
         this.setState(
           {
             form: 
-              <LancamentoForm 
+              <CadastroContas 
+                clientId={this.state.clientId}
                 nome="Cadastro de Contas"
                 onClose={this.handleClose.bind(this)} 
               >
-                  <span>this is a children component</span>
+                  <span>Algo deu errado para achar o form CadastroSocios</span>
                    
-              </LancamentoForm> 
+              </CadastroContas> 
+          }
+        )
+        break;
+      case 'MovimentoInclusao':
+        this.setState(
+          {
+            form: 
+              <MovimentoInclusao
+                clientId={this.state.clientId}
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form MovimentoInclusao</span>
+                   
+              </MovimentoInclusao> 
+          }
+        )
+        break;
+      case 'MovimentoSocios':
+        this.setState(
+          {
+            form: 
+              <MovimentoSocios
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form MovimentoSocios</span>
+                   
+              </MovimentoSocios> 
+          }
+        )
+        break;
+      case 'AtualizaMovimentos':
+        this.setState(
+          {
+            form: 
+              <AtualizaMovimentos
+                clientId={this.state.clientId}
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form AtualizaMovimentos</span>
+                   
+              </AtualizaMovimentos> 
+          }
+        )
+        break;
+      case 'PrevisaoDiaria':
+        this.setState(
+          {
+            form: 
+              <PrevisaoDiaria
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form PrevisaoDiaria</span>
+                   
+              </PrevisaoDiaria> 
+          }
+        )
+        break;
+      case 'PrevisaoMensal':
+        this.setState(
+          {
+            form: 
+              <PrevisaoMensal
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form PrevisaoMensal</span>
+                   
+              </PrevisaoMensal> 
+          }
+        )
+        break;
+      case 'CalculoPrevisao':
+        this.setState(
+          {
+            form: 
+              <CalculoPrevisao
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form CalculoPrevisao</span>
+                   
+              </CalculoPrevisao> 
+          }
+        )
+        break;
+      case 'PosicaoBancaria':
+        this.setState(
+          {
+            form: 
+              <PosicaoBancaria
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form PosicaoBancaria</span>
+                   
+              </PosicaoBancaria> 
+          }
+        )
+        break;
+      case 'PosicaoPeriodo':
+        this.setState(
+          {
+            form: 
+              <PosicaoPeriodo
+                clientId={this.state.clientId} 
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form PosicaoPeriodo</span>
+                   
+              </PosicaoPeriodo> 
           }
         )
         break;
       default:
-        this.handleClose(this); // por que funciona assim?
-        //this.setState({form: null}); // É conteudo de handleClose
-
-        alert('abrir um formulario qualquer =' + e + "  " + (100/2));
+        this.handleClose(this); 
+        this.setState({
+          form: 
+          <Alert bsStyle="danger" style={{margin: 200}} >
+          <h4>Impossivel mas entramos no "default" do case principal!</h4>
+            <p>Alguma coisa muito errada aconteceu, avise o responsavel.</p>
+            <p>
+              <Button onClick={this.handleClose}>Ok</Button>
+            </p>
+          </Alert>
+        });
     }
 
   }
