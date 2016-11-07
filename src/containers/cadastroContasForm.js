@@ -1,25 +1,25 @@
 
 import React, { Component } from 'react';
 
-import { 
-  OverlayTrigger, 
-  Button, 
+import {  
+  Button,
+  Panel,
   Glyphicon, 
-  Panel, 
-  Col, 
   Row, 
-  Grid,
+  Col,
   Table,
   Radio,
   Tooltip,
-  Model
+  Alert,
+  OverlayTrigger
 } from 'react-bootstrap';
 
 //import DatePicker from 'react-bootstrap-date-picker';
 //import uuid               from 'node-uuid';
 import { assign, omit }   from 'lodash';
-import mqtt               from 'mqtt/lib/connect';
+//import mqtt               from 'mqtt/lib/connect';
 import novaContaForm      from './novaContaForm';
+import Calcular           from './Calcular';
  
 export default class LancamentoForm extends Component {
   constructor(props) {
@@ -99,10 +99,10 @@ export default class LancamentoForm extends Component {
   }
 
   handleClose() {
-
+    this.setState({form: null});
   }
 
-  /*componentWillMount() {
+/*  componentWillMount() {
     const opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
@@ -160,14 +160,37 @@ export default class LancamentoForm extends Component {
     alert('Erro: ' + msg);
   }
 
-  handleClick() {
-    this.setState({isLoading: true});
-
-    // This probably where you would have an `ajax` call
-    setTimeout(() => {
-      // Completed of async action, set loading state back
-      this.setState({isLoading: false});
-    }, 2000);
+  handleClick(e) {
+    switch(e) {
+      case 'Contas':
+        this.setState(
+          {
+            form: 
+              <Calcular 
+                clientId={this.state.clientId}
+                nome="Cadastro de Socios"
+                onClose={this.handleClose.bind(this)} 
+                onSave={this.handleSave.bind(this)} 
+                //{...this.state.lista[i]}
+              >
+                  <span>Algo deu errado para achar o form CadastroContas</span>
+              </Calcular> 
+          }
+        )
+        break;
+      default:
+        this.handleClose(this); 
+        this.setState({
+          form: 
+          <Alert bsStyle="danger" style={{margin: 200}} >
+          <h4>Impossivel mas entramos no "default" do case principal!</h4>
+            <p>Alguma coisa muito errada aconteceu, avise o responsavel.</p>
+            <p>
+              <Button onClick={this.handleClose}>Ok</Button>
+            </p>
+          </Alert>
+        });
+    }
   }
 
   handleInsert() {
@@ -281,7 +304,7 @@ export default class LancamentoForm extends Component {
                         <Button
                           bsSize="large"
                           disabled={!this.state.id}
-                          onClick={this.handleEdit}
+                          onClick={this.handleClick.bind(this, 'Contas')}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="pencil" />
@@ -324,7 +347,7 @@ export default class LancamentoForm extends Component {
                     >
                         <Button
                           bsSize="large"
-                          onClick={this.handleInsert}
+                          onClick={this.handleClick.bind(this, 'Contas')}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="plus" />

@@ -2,25 +2,15 @@
 import React, { Component } from 'react';
 
 import { 
-  OverlayTrigger, 
   Button, 
   Glyphicon, 
-  Panel, 
-  Col, 
   Row, 
-  Grid,
-  FormGroup,
-  FormControl,
-  Table,
-  Checkbox,
-  Tooltip,
   Modal
 } from 'react-bootstrap';
-import DatePicker from 'react-bootstrap-date-picker';
 
 import uuid from 'node-uuid';
 import { assign, omit } from 'lodash';
-import mqtt from 'mqtt/lib/connect';
+//import mqtt from 'mqtt/lib/connect';
 
 export default class novaContaForm extends Component {
   constructor(props) {

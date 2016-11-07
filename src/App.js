@@ -28,8 +28,6 @@ import CalculoPrevisao    from './containers/consultaCalculoForm';
 import PosicaoBancaria    from './containers/consultaPosicaoBancariaForm';
 import PosicaoPeriodo     from './containers/consultaPosicaoPeriodoForm';
 
-
-
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -50,20 +48,6 @@ export default class App extends Component {
   handleClick(e) {
     //alert(JSON.stringify(e))
     switch(e) {
-      case 'Socios':
-        this.setState(
-          {
-            form: 
-              <CadastroSocios 
-                clientId={this.state.clientId}
-                nome="Cadastro de Socios"
-                onClose={this.handleClose.bind(this)} 
-              >
-                  <span>Algo deu errado para achar o form CadastroContas</span>
-              </CadastroSocios> 
-          }
-        )
-        break;
       case 'Contas':
         this.setState(
           {
@@ -73,9 +57,23 @@ export default class App extends Component {
                 nome="Cadastro de Contas"
                 onClose={this.handleClose.bind(this)} 
               >
-                  <span>Algo deu errado para achar o form CadastroSocios</span>
+                  <span>Algo deu errado para achar o form CadastroContas</span>
                    
               </CadastroContas> 
+          }
+        )
+        break;
+      case 'Socios':
+        this.setState(
+          {
+            form: 
+              <CadastroSocios 
+                clientId={this.state.clientId}
+                nome="Cadastro de Socios"
+                onClose={this.handleClose.bind(this)} 
+              >
+                  <span>Algo deu errado para achar o form CadastroSocios</span>
+              </CadastroSocios> 
           }
         )
         break;
