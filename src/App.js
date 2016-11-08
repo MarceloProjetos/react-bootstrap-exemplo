@@ -239,13 +239,13 @@ export default class App extends Component {
               </NavDropdown>
 
               <NavDropdown eventKey={3} title="Consulta" id="Consulta-nav-dropdown">
-                <MenuItem onClick={this.handleClick.bind(this, 'PrevisaoDiaria')} eventKey={3.1}>Previsão diaria</MenuItem>
-                <MenuItem onClick={this.handleClick.bind(this, 'PrevisaoMensal')} eventKey={3.2}>Previsão mensal</MenuItem>
+                <MenuItem onClick={this.handleClick.bind(this, 'PrevisaoDiaria' )}eventKey={3.1}>Previsão diaria</MenuItem>
+                <MenuItem onClick={this.handleClick.bind(this, 'PrevisaoMensal' )}eventKey={3.2}>Previsão mensal</MenuItem>
                 <MenuItem divider />
                 <MenuItem onClick={this.handleClick.bind(this, 'CalculoPrevisao')}eventKey={3.4}>Calculo Previsão</MenuItem>
                 <MenuItem divider />
                 <MenuItem onClick={this.handleClick.bind(this, 'PosicaoBancaria')}eventKey={3.5}>Posição Bancaria</MenuItem>
-                <MenuItem onClick={this.handleClick.bind(this, 'PosicaoPeriodo')} eventKey={3.5}>Posição por Periodo</MenuItem>
+                <MenuItem onClick={this.handleClick.bind(this, 'PosicaoPeriodo' )}eventKey={3.5}>Posição por Periodo</MenuItem>
               </NavDropdown>
             </Nav>
           </Grid>
