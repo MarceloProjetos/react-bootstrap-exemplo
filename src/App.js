@@ -167,7 +167,7 @@ export default class App extends Component {
           }
         )
         break;
-      case 'PosicaoBancaria':
+      case 'PosicaoBancaria': 
         this.setState(
           {
             form: 

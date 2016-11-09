@@ -3,16 +3,10 @@ import React, { Component } from 'react';
 import { 
   Button, 
   ControlLabel,
-   /*ListGroup, 
-  ButtonToolbar, 
-  Col, 
-  Row, 
-  Grid,*/
   FormGroup,
   FormControl,
   Modal
 } from 'react-bootstrap';
-//import DatePicker from 'react-bootstrap-date-picker';
 
 export default class Calcular extends Component {
   constructor(props) {

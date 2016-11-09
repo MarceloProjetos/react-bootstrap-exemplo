@@ -14,12 +14,11 @@ import {
   OverlayTrigger
 } from 'react-bootstrap';
 
-//import DatePicker from 'react-bootstrap-date-picker';
 //import uuid               from 'node-uuid';
-import { assign, omit }   from 'lodash';
+//import { assign, omit }   from 'lodash';
 //import mqtt               from 'mqtt/lib/connect';
-import novaContaForm      from './novaContaForm';
-import Calcular           from './Calcular';
+import NovaContaForm      from './novaContaForm';
+import EditarContaForm    from './EditarContaForm';
  
 export default class LancamentoForm extends Component {
   constructor(props) {
@@ -81,20 +80,16 @@ export default class LancamentoForm extends Component {
       topics: {}
     }
 
-    this.handleClose = this.handleClose.bind(this);
+    this.handleClose  = this.handleClose.bind(this);
+    this.handleClick  = this.handleClick.bind(this);
 
-    this.handleClick = this.handleClick.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    //this.handleInsert = this.handleInsert.bind(this);
+    //this.handleSave   = this.handleSave.bind(this);
+    //this.handleDelete = this.handleDelete.bind(this);
+    //this.handleEdit   = this.handleEdit.bind(this);
 
-    this.handleInsert = this.handleInsert.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handleEdit = this.handleEdit.bind(this);
-    this.handleCalc = this.handleCalc.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-
-    this.handleError = this.handleError.bind(this);
-    this.handleSaveOk = this.handleSaveOk.bind(this);
+    this.handleError  = this.handleError.bind(this);
+    //this.handleSaveOk = this.handleSaveOk.bind(this);
 
   }
 
@@ -162,38 +157,71 @@ export default class LancamentoForm extends Component {
 
   handleClick(e) {
     switch(e) {
-      case 'Contas':
+      case 'Nova':
         this.setState(
           {
             form: 
-              <Calcular 
-                clientId={this.state.clientId}
-                nome="Cadastro de Socios"
+              <NovaContaForm 
+                //clientId={this.state.clientId}
+                title="Cadastrar nova Contas"
                 onClose={this.handleClose.bind(this)} 
-                onSave={this.handleSave.bind(this)} 
+                //onSave={this.handleSave.bind(this)} 
                 //{...this.state.lista[i]}
               >
                   <span>Algo deu errado para achar o form CadastroContas</span>
-              </Calcular> 
+              </NovaContaForm> 
+          }
+        )
+        break;
+      case 'Editar':
+        this.setState(
+          {
+            form: 
+              <EditarContaForm 
+                //clientId={this.state.clientId}
+                title="Editar Conta cadastrada"
+                onClose={this.handleClose.bind(this)} 
+                //onSave={this.handleSave.bind(this)} 
+                //{...this.state.lista[i]}
+              >
+                  <span>Algo deu errado para achar o form CadastroContas</span>
+              </EditarContaForm> 
+          }
+        )
+        break;
+      case 'Delete':
+        this.setState(
+          {
+            form: 
+              <EditarContaForm 
+                clientId={this.state.clientId}
+                nome="Deletar Cadastro?"
+                onClose={this.handleClose.bind(this)} 
+                //onSave={this.handleSave.bind(this)} 
+                //{...this.state.lista[i]}
+              >
+                  <span>Algo deu errado para achar o form CadastroContas</span>
+              </EditarContaForm> 
           }
         )
         break;
       default:
-        this.handleClose(this); 
         this.setState({
           form: 
-          <Alert bsStyle="danger" style={{margin: 200}} >
-          <h4>Impossivel mas entramos no "default" do case principal!</h4>
-            <p>Alguma coisa muito errada aconteceu, avise o responsavel.</p>
-            <p>
-              <Button onClick={this.handleClose}>Ok</Button>
-            </p>
-          </Alert>
+          <div>
+            <Alert bsStyle="danger" style={{margin: 200}} >
+            <h4>Impossivel mas entramos no "default" do case principal!</h4>
+              <p>Alguma coisa muito errada aconteceu, avise o responsavel.</p>
+              <p>
+                <Button onClick={this.handleClose}>Ok</Button>
+              </p>
+            </Alert>
+          </div>
         });
     }
   }
 
-  handleInsert() {
+  /*handleInsert() {
         //alert('ola');
         this.setState(
           {
@@ -201,7 +229,7 @@ export default class LancamentoForm extends Component {
               <novaContaForm />
           }
         )
-  /*
+  
     this.setState({
       _id: uuid.v4(), 
       numero: '',
@@ -212,10 +240,10 @@ export default class LancamentoForm extends Component {
       representante: '',
       nome: '',
       parcelas: []
-    });*/
-  }
+    });
+  }*/
 
-  handleSave(data) {
+  /*handleSave(data) {
     //alert(JSON.stringify(this.state, null, 2));
     this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
       if (err) {
@@ -232,34 +260,22 @@ export default class LancamentoForm extends Component {
       }
       
     }.bind(this));    
-  }
+  }*/
 
-  handleSaveOk(msg) {
+  /*handleSaveOk(msg) {
     alert('Salvo com sucesso: ' + msg);
   }
 
   handleDelete(id) {
 
-  }
+  }*/
 
-  handleEdit(data) {
-
-  }
-
-  handleCalc(data) {
-
-  }
-
-  handleSearch(data) {
-
-  }
-
-  handleChange(value) {
-    // value is an ISO String. 
+  /*handleEdit(value) {
+ // value is an ISO String. 
     this.setState({
       [value.target.id]: value.target.value
     });
-  }
+  }*/   
 
   render() {
     //const canSave = true;
@@ -304,7 +320,7 @@ export default class LancamentoForm extends Component {
                         <Button
                           bsSize="large"
                           disabled={!this.state.id}
-                          onClick={this.handleClick.bind(this, 'Contas')}
+                          onClick={this.handleClick.bind(this, 'Editar')}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="pencil" />
@@ -323,7 +339,7 @@ export default class LancamentoForm extends Component {
                         <Button
                           bsSize="large"
                           disabled={!this.state.id}
-                          onClick={this.handleDelete}
+                          onClick={this.handleClick.bind(this, 'Delete')}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="trash" />
@@ -347,7 +363,7 @@ export default class LancamentoForm extends Component {
                     >
                         <Button
                           bsSize="large"
-                          onClick={this.handleClick.bind(this, 'Contas')}
+                          onClick={this.handleClick.bind(this, 'Nova')}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="plus" />
