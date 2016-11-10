@@ -62,27 +62,33 @@ export default class NovaContaForm extends Component {
   }
 
   BancoValidationState() {
+    var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.banco.length;
-    if (length < 3) {return 'error';}
-    else {
+    //if (length < 3) {return 'error';}
+    if (regex.test(this.state.banco)&&(length>3)){
       return 'success';
+    } else {
+      return 'error';
     }
   }
 
   AgenciaValidationState() {
+    var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
     const length = this.state.agencia.length;
-    if (length < 3) {return 'error';}
-    else {
+    //if (length < 3) {return 'error';}
+    if (regex.test(this.state.agencia)&&(length>3)&&((this.state.agencia)!==(this.state.conta))){
       return 'success';
+    } else {
+      return 'error';
     }
   }
 
   ContaValidationState() {
-    var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
-    //const length = this.state.conta.length;
+    var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
+    const length = this.state.conta.length;
     //console.log(regex.test(this.state.conta));
  //   if (length > 5) {
-      if (regex.test(this.state.conta)){
+      if (regex.test(this.state.conta)&&(length>3)){
         //console.log('Chamou' + this.state.conta);
       return 'success';
     } else {
@@ -93,11 +99,15 @@ export default class NovaContaForm extends Component {
   DescricaoValidationState() {
     var regex = /^\s*[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.descricao.length;
-    if (length < 30) {return 'success';}
-    else {
+    //if (length < 30) {return 'success';}
+    if (regex.test(this.state.descricao)&&(length<20)){
+      //console.log('valor = ' + (this.state.descricao));
+      return 'success';
+    } else {
       return 'error';
     }
   }
+
 
   render() {
 
@@ -111,31 +121,29 @@ export default class NovaContaForm extends Component {
           <Modal.Body>
             <FormGroup controlId="Conta" validationState={this.BancoValidationState()}>
               <ControlLabel>Nome do Banco</ControlLabel>
-              <FormControl ref="Banco" type="text" value={this.state.banco} onChange={this.handleChangeBanco} />
+              <FormControl ref="Banco" type="text" value={this.state.banco} onChange={this.handleChangeBanco} placeholder="Digite aqui o nome do Banco"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.AgenciaValidationState()}>
               <ControlLabel>Agência</ControlLabel>
-              <FormControl ref="Agencia" type="text" value={this.state.agencia} onChange={this.handleChangeAgencia} />
+              <FormControl ref="Agencia" type="text" value={this.state.agencia} onChange={this.handleChangeAgencia} placeholder="Numero da Agência"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.ContaValidationState()}>
               <ControlLabel>Conta</ControlLabel>
-              <FormControl ref="Conta" type="text" value={this.state.conta} onChange={this.handleChangeConta} />
+              <FormControl ref="Conta" type="text" value={this.state.conta} onChange={this.handleChangeConta} placeholder="Numero da conta com - para separar o digito"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.DescricaoValidationState()}>
               <ControlLabel>Descrição</ControlLabel>
-              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} />
+              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa conta"/>
               <FormControl.Feedback />
             </FormGroup>
           </Modal.Body>
-
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Close</Button>
-            <Button bsStyle="primary" onClick={this.handleSave} disabled={((!this.state.banco)||(!this.state.agencia)||(!this.state.conta))}>Save changes</Button>
+            <Button bsStyle="primary" onClick={this.handleSave} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Save changes</Button>
           </Modal.Footer>
-
         </Modal.Dialog>
       </div>
     );
