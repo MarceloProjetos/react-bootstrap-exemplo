@@ -14,9 +14,9 @@ import {
   OverlayTrigger
 } from 'react-bootstrap';
 
-//import uuid               from 'node-uuid';
-//import { assign, omit }   from 'lodash';
-//import mqtt               from 'mqtt/lib/connect';
+import uuid               from 'node-uuid';
+import { assign, omit }   from 'lodash';
+import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
 import EditarContaForm    from './EditarContaForm';
  
@@ -25,7 +25,7 @@ export default class LancamentoForm extends Component {
     super(props);
 
     this.state = { 
-      _id: null,
+      _id: uuid.v4(),
       contas: [
         {
           selecionada: false,
@@ -82,23 +82,11 @@ export default class LancamentoForm extends Component {
 
     this.handleClose  = this.handleClose.bind(this);
     this.handleClick  = this.handleClick.bind(this);
-
-    //this.handleInsert = this.handleInsert.bind(this);
-    //this.handleSave   = this.handleSave.bind(this);
-    //this.handleDelete = this.handleDelete.bind(this);
-    //this.handleEdit   = this.handleEdit.bind(this);
-
     this.handleError  = this.handleError.bind(this);
-    //this.handleSaveOk = this.handleSaveOk.bind(this);
-
   }
 
-  handleClose() {
-    this.setState({form: null});
-  }
-
-/*  componentWillMount() {
-    const opts = {
+  componentWillMount() {
+    var opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
       protocol: 'ws',
@@ -112,7 +100,9 @@ export default class LancamentoForm extends Component {
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      //let topics = {};
+      let topics = {};
+
+      alert('Conectou no MQTT. ClienteID = ' +  opts.clientId);
 
       this.client.subscribe(
         'financeiro/cadastro/erros/' + opts.clientId, 
@@ -124,9 +114,9 @@ export default class LancamentoForm extends Component {
         }.bind(this)
       );
 
-      //this.client.subscribe('financeiro/cadastro/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/excluir',  function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/nova',     function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/inserido', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/excluido', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/alterado', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
   
     }.bind(this));
     
@@ -149,7 +139,11 @@ export default class LancamentoForm extends Component {
       )
     )
     this.client.end();
-  }*/
+  }
+
+  handleClose() {
+    this.setState({form: null});
+  }
 
   handleError(msg) {
     alert('Erro: ' + msg);
@@ -162,7 +156,7 @@ export default class LancamentoForm extends Component {
           {
             form: 
               <NovaContaForm 
-                //clientId={this.state.clientId}
+                clientId={this.props.clientId}
                 title="Cadastrar nova Contas"
                 onClose={this.handleClose.bind(this)} 
                 //onSave={this.handleSave.bind(this)} 
@@ -221,64 +215,8 @@ export default class LancamentoForm extends Component {
     }
   }
 
-  /*handleInsert() {
-        //alert('ola');
-        this.setState(
-          {
-            form: 
-              <novaContaForm />
-          }
-        )
-  
-    this.setState({
-      _id: uuid.v4(), 
-      numero: '',
-      pedido: '',
-      emissao: new Date().toISOString(),
-      entrega: new Date().toISOString(),
-      cnpj: '',
-      representante: '',
-      nome: '',
-      parcelas: []
-    });
-  }*/
-
-  /*handleSave(data) {
-    //alert(JSON.stringify(this.state, null, 2));
-    this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
-      if (err) {
-        console.log('Erro ao se inscrever no topico: ' + granted[0].topic)
-      } else {
-        this.setState(
-          {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
-          this.client.publish.bind(
-            this.client, 
-            'financeiro/cadastro/alterar/' + this.props.clientId, 
-            JSON.stringify(omit(this.state, 'topics'))
-          )  
-        );
-      }
-      
-    }.bind(this));    
-  }*/
-
-  /*handleSaveOk(msg) {
-    alert('Salvo com sucesso: ' + msg);
-  }
-
-  handleDelete(id) {
-
-  }*/
-
-  /*handleEdit(value) {
- // value is an ISO String. 
-    this.setState({
-      [value.target.id]: value.target.value
-    });
-  }*/   
-
   render() {
-    //const canSave = true;
+    const canSave = true;
 
     return (
       <div>

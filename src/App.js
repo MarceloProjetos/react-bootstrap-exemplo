@@ -14,14 +14,14 @@ import {
   Alert,
   Button,
 } from 'react-bootstrap';
-
+//Menu cadastro
 import CadastroContas     from './containers/cadastroContasForm';
 import CadastroSocios     from './containers/cadastroSociosForm';
-
+//Menu Lançamento
 import MovimentoInclusao  from './containers/lancamentoInclusaoForm';
 import MovimentoSocios    from './containers/lancamentoSociosForm';
 import AtualizaMovimentos from './containers/lancamentoAtualizaForm';
-
+//Menu Consultas
 import PrevisaoDiaria     from './containers/consultaPrevisaoDiariaForm';
 import PrevisaoMensal     from './containers/consultaPrevisaoMensalForm';
 import CalculoPrevisao    from './containers/consultaCalculoForm';
@@ -33,7 +33,7 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      clientId: 'mqtt_' + (1 + Math.random() * 4294967295).toString(16),
+      clientId: 'Financeiro_' + (1 + Math.random() * 4294967295).toString(16),
       form: null
     }
 
@@ -57,8 +57,7 @@ export default class App extends Component {
                 nome="Cadastro de Contas"
                 onClose={this.handleClose.bind(this)} 
               >
-                  <span>Algo deu errado para achar o form CadastroContas</span>
-                   
+                <span>Algo deu errado para achar o form CadastroContas</span>  
               </CadastroContas> 
           }
         )

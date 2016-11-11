@@ -9,6 +9,9 @@ import {
   Modal
 } from 'react-bootstrap';
 
+import { assign, omit }   from 'lodash';
+import mqtt               from 'mqtt/lib/connect';
+
 export default class NovaContaForm extends Component {
   constructor(props) {
     super(props);
@@ -20,24 +23,71 @@ export default class NovaContaForm extends Component {
       descricao: ''
     }
 
-    this.handleSave = this.handleSave.bind(this);
-
+    this.handleSave             = this.handleSave.bind(this);
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
     this.handleChangeConta      = this.handleChangeConta.bind(this);
     this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);
+
+    this.handleError  = this.handleError.bind(this);
   }
 
   componentWillMount() {
-    this.setState(
-      {
-        clientId: this.props.clientId,
-        banco: this.props.banco || '',
-        agencia: this.props.agencia || '',
-        conta: this.props.conta || '',
-        descricao: this.props.descricao || ''
-      }
+    var opts = {
+      host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
+      port: 61614,
+      protocol: 'ws',
+      qos: 0,
+      retain: false,
+      clean: true,
+      keepAlive: 30, // 30 sec.
+      clientId: this.props.clientId
+    }
+
+    this.client = mqtt.connect(opts);
+
+    this.client.on('connect', function() {
+      //let topics = {};
+
+      this.client.subscribe(
+        'financeiro/cadastro/erros/' + opts.clientId, 
+        function(err, granted) { 
+          !err ? 
+            this.setState({
+              topics: assign(this.state.topics, {[granted[0].topic]: this.handleError})}) : 
+            console.log('Erro ao se inscrever no topico: ' + err)
+        }.bind(this)
+      );
+
+      //this.client.subscribe('financeiro/cadastro/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/excluir',  function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/cadastro/nova',     function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+  
+    }.bind(this));
+    
+    this.client.on('message', function (topic, message) {
+      // message is Buffer
+      console.log(message.toString())
+      
+      this.state.topics[topic] && this.state.topics[topic](message.toString());
+
+    }.bind(this))
+
+  }
+
+  componentWillUnmount() {
+    this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
+      this.client.unsubscribe(this.state.topics[key].topic, function(err) 
+        { 
+          err && console.log('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+        }
+      )
     )
+    this.client.end();
+  }
+
+  handleError(msg) {
+    alert('Erro: ' + msg);
   }
 
   handleSave() {
@@ -107,7 +157,41 @@ export default class NovaContaForm extends Component {
       return 'error';
     }
   }
+  
+  handleSave() {
+    //alert(JSON.stringify(this.state, null, 2));
+    // esta fila é o retorno da operação
+    this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
+      if (err) {
+        alert('Erro ao se inscrever no topico: ' + granted[0].topic)
+      } else {
+        this.setState(
+          {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
+          this.client.publish.bind(
+            this.client, 
+            'financeiro/cadastro/alterar/' + this.props.clientId, 
+            JSON.stringify(omit(this.state, 'topics'))
+          )  
+        );
+      }
+      
+    }.bind(this));    
+  }
 
+  handleSaveOk(msg) {
+    alert('Salvo com sucesso: ' + msg);
+  }
+
+  handleDelete(id) {
+
+  }
+
+  handleEdit(value) {
+ // value is an ISO String. 
+    this.setState({
+      [value.target.id]: value.target.value
+    });
+  } 
 
   render() {
 
