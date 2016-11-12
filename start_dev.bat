@@ -1,9 +1,10 @@
-start /MIN /D "c:\Desenvolvimento\apache-activemq-5.13.3\bin" cmd /k activemq start
+REM ACTIVEMQ START
+start /MIN /D "c:\Desenvolvimento\apache-activemq-5.14.1-bin\bin" cmd /k activemq start
 
+REM NODE-RED
 start /MIN /D "c:\Program Files\nodejs" cmd /k node-red -v
 
-start /MIN /D "c:\Program Files\MongoDB\Server\3.2\bin\" cmd /k mongod -dbpath c:\data\db
-
-start /D "c:\Desenvolvimento\git\HMI-controler-with-node-red" cmd /k gulp watch
+REM REACT-CREAT-APP
+start /D "c:\Desenvolvimento\git\React\react-bootstrap-exemplo" cmd /k npm start
 
 
