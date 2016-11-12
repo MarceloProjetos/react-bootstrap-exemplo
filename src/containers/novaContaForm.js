@@ -106,6 +106,14 @@ export default class NovaContaForm extends Component {
     this.setState({ descricao: event.target.value })
   }
 
+  //numeros somente   /[0-9]*/
+  //letras somente    /[a-zA-Z\s]*/
+  //Alfanumerico      /[0-9a-zA-Z\s]*/
+  //telefone          /^\(?[1-9]\d{2}[\)\-]\s?\d{3}\-\d{4}$/
+  //URL padrão        /^((http|ftp|https):\/\/w{3}[\d]*.|(http|ftp|https):\/\/|w{3}[\d]*.)([\w\d\._\-#\(\)\[\]\,;:]+@[\w\d\._\-#\(\)\[\]\,;:])?([a-z0-9]+.)*[a-z\-0-9]+.([a-z]{2,3})?[a-z]{2,6}(:[0-9]+)?(\/[\/a-z0-9\._\-,]+)*[a-z0-9\-_\.\s\%]+(\?[a-z0-9=%&\.\-,#]+)?$/
+  //Email valido      /^([a-zA-Z0-9]+[a-zA-Z0-9._%\-\+]*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,4})$/
+
+
   BancoValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.banco.length;
