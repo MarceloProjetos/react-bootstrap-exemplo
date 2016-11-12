@@ -15,7 +15,7 @@ import {
 } from 'react-bootstrap';
 
 import uuid               from 'node-uuid';
-import { assign}   from 'lodash';
+import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
 import EditarContaForm    from './EditarContaForm';
@@ -80,9 +80,13 @@ export default class LancamentoForm extends Component {
       topics: {}
     }
 
-    this.handleClose  = this.handleClose.bind(this);
-    this.handleClick  = this.handleClick.bind(this);
-    this.handleError  = this.handleError.bind(this);
+    this.handleClose    = this.handleClose.bind(this);
+    this.handleClick    = this.handleClick.bind(this);
+    this.handleError    = this.handleError.bind(this);
+    this.handleSearch   = this.handleSearch.bind(this);
+    this.handleIncluido = this.handleIncluido.bind(this);
+    this.handleAlterado = this.handleAlterado.bind(this);
+    this.handleExcluido = this.handleExcluido.bind(this);
   }
 
   componentWillMount() {
@@ -100,21 +104,25 @@ export default class LancamentoForm extends Component {
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      //let topics = {};
 
       this.client.subscribe(
-        'financeiro.cadastro.erros.' + this.props.clientId, 
-        //'financeiro.cadastro.incluir.' + this.props.clientId, 
-        function(err, granted) { 
+        'financeiro.cadastro.contas.erros.'    + this.props.clientId, 
+        'financeiro.cadastro.contas.search.'   + this.props.clientId,
+        'financeiro.cadastro.contas.incluido.#', 
+        'financeiro.cadastro.contas.alterado.#', 
+        'financeiro.cadastro.contas.excluido.#', 
+         function(err, granted) { 
           !err ? 
             this.setState(
               {
                 topics: assign(
                           this.state.topics, 
                           {
-                            [granted[0].topic]: this.handleError  // '/marcelo'  topic.marcelo
-                            //[granted[1].topic]: this.handleIncluir
-                           // [granted[1].topic]: null
+                            [granted[0].topic]: this.handleError,   
+                            [granted[1].topic]: this.handleSearch,  
+                            [granted[2].topic]: this.handleIncluido, 
+                            [granted[3].topic]: this.handleAlterado, 
+                            [granted[4].topic]: this.handleExcluido 
                           }
                         )
               }
@@ -122,15 +130,7 @@ export default class LancamentoForm extends Component {
           : 
             alert('Erro ao se inscrever no topico: ' + err);
         }.bind(this)
-      );
-
-      //this.client.subscribe('financeiro/cadastro/inserido', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/excluido', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/alterado', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-  
-        //this.client.subscribe('financeiro/cadastro/alterado/$', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-  
-  
+      );  
     }.bind(this));
     
     this.client.on('message', function (topic, message) {
@@ -153,7 +153,6 @@ export default class LancamentoForm extends Component {
       )
     )
     this.client.end();
-    alert('ola sai...')
   }
 
   handleClose() {
@@ -162,6 +161,22 @@ export default class LancamentoForm extends Component {
 
   handleError(msg) {
     alert('Erro: ' + msg);
+  }
+
+    handleSearch(msg) {
+    alert('search: ' + msg);
+  }
+
+    handleIncluido(msg) {
+    alert('incluido: ' + msg);
+  }
+
+    handleAlterado(msg) {
+    alert('alterado: ' + msg);
+  }
+
+    handleExcluido(msg) {
+    alert('excluido: ' + msg);
   }
 
   handleClick(e) {
