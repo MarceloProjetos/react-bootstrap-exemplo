@@ -15,7 +15,7 @@ import {
 } from 'react-bootstrap';
 
 import uuid               from 'node-uuid';
-import { assign, omit }   from 'lodash';
+import { assign}   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
 import EditarContaForm    from './EditarContaForm';
@@ -86,7 +86,7 @@ export default class LancamentoForm extends Component {
   }
 
   componentWillMount() {
-    var opts = {
+    let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
       protocol: 'ws',
@@ -100,17 +100,27 @@ export default class LancamentoForm extends Component {
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      let topics = {};
-
-      alert('Conectou no MQTT. ClienteID = ' +  opts.clientId);
+      //let topics = {};
 
       this.client.subscribe(
-        'financeiro/cadastro/erros/' + opts.clientId, 
+        'financeiro.cadastro.erros.' + this.props.clientId, 
+        //'financeiro.cadastro.incluir.' + this.props.clientId, 
         function(err, granted) { 
           !err ? 
-            this.setState({
-              topics: assign(this.state.topics, {[granted[0].topic]: this.handleError})}) : 
-            console.log('Erro ao se inscrever no topico: ' + err)
+            this.setState(
+              {
+                topics: assign(
+                          this.state.topics, 
+                          {
+                            [granted[0].topic]: this.handleError  // '/marcelo'  topic.marcelo
+                            //[granted[1].topic]: this.handleIncluir
+                           // [granted[1].topic]: null
+                          }
+                        )
+              }
+            ) 
+          : 
+            alert('Erro ao se inscrever no topico: ' + err);
         }.bind(this)
       );
 
@@ -118,13 +128,17 @@ export default class LancamentoForm extends Component {
       //this.client.subscribe('financeiro/cadastro/excluido', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
       //this.client.subscribe('financeiro/cadastro/alterado', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
   
+        //this.client.subscribe('financeiro/cadastro/alterado/$', function(err, granted) { !err ? this.state.topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+  
+  
     }.bind(this));
     
     this.client.on('message', function (topic, message) {
       // message is Buffer
       console.log(message.toString())
       
-      this.state.topics[topic] && this.state.topics[topic](message.toString());
+      // this.state.topics[topic] && this.handleError(message.toString());
+      this.state.topics[topic] && this.state.topics[topic](message.toString()); 
 
     }.bind(this))
 
@@ -139,6 +153,7 @@ export default class LancamentoForm extends Component {
       )
     )
     this.client.end();
+    alert('ola sai...')
   }
 
   handleClose() {
@@ -216,7 +231,7 @@ export default class LancamentoForm extends Component {
   }
 
   render() {
-    const canSave = true;
+    //const canSave = true;
 
     return (
       <div>

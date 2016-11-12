@@ -90,11 +90,6 @@ export default class NovaContaForm extends Component {
     alert('Erro: ' + msg);
   }
 
-  handleSave() {
-    // enviar dados para fila
-    this.props.onClose && this.props.onClose();
-  }
-
   handleChangeBanco(event) {
     this.setState({ banco: event.target.value })
   }
@@ -159,7 +154,7 @@ export default class NovaContaForm extends Component {
   }
   
   handleSave() {
-    //alert(JSON.stringify(this.state, null, 2));
+    // enviar dados para fila
     // esta fila é o retorno da operação
     this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
       if (err) {
@@ -175,7 +170,8 @@ export default class NovaContaForm extends Component {
         );
       }
       
-    }.bind(this));    
+    }.bind(this)); 
+    this.props.onClose && this.props.onClose();
   }
 
   handleSaveOk(msg) {
