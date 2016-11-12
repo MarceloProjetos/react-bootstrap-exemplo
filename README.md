@@ -118,7 +118,19 @@ For systems 32 bits in a terminal window, in root permission, enter the followin
 To verify that it is installed as a service see:
 
     Control Panel-->Administrative tools-->Services and look for **ActiveMQ**
-    
+   
+**Delete all of the topics in ActiveMQ on startup:**
+
+Go to configuration file "ACTIVEMQ.XML", open the file for editing on the broker element, add the following attribute: 
+
+    deleteAllMessagesOnStartup="true"
+   
+This will cause all previous topics & queues, and their pending messages to be deleted from your kaha store when you restart your broker.
+
+In my case...
+
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}"  deleteAllMessagesOnStartup="true">
+
 ----
 
 ## 5-Node-red
