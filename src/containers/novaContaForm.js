@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { string, func } from 'react-prop-types';
 
 import { 
   Button, 
@@ -23,13 +22,14 @@ export default class NovaContaForm extends Component {
       descricao: ''
     }
 
-    this.handleSave             = this.handleSave.bind(this);
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
     this.handleChangeConta      = this.handleChangeConta.bind(this);
     this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);
 
-    this.handleError  = this.handleError.bind(this);
+    this.handleError            = this.handleError.bind(this);
+    this.handleIncluir          = this.handleIncluir.bind(this);
+    this.handleSaveOk           = this.handleSaveOk.bind(this);
   }
 
   componentWillMount() {
@@ -47,22 +47,27 @@ export default class NovaContaForm extends Component {
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      //let topics = {};
 
       this.client.subscribe(
-        'financeiro/cadastro/erros/' + opts.clientId, 
-        function(err, granted) { 
+        ['financeiro/cadastro/contas/erros/'  + this.props.clientId, 
+        'financeiro/cadastro/contas/incluir/' + this.props.clientId],
+         function(err, granted) { 
           !err ? 
-            this.setState({
-              topics: assign(this.state.topics, {[granted[0].topic]: this.handleError})}) : 
-            console.log('Erro ao se inscrever no topico: ' + err)
+            this.setState(
+              {
+                topics: assign(
+                          this.state.topics, 
+                          {
+                            [granted[0].topic]: this.handleError,   
+                            [granted[1].topic]: this.handleIncluir
+                          }
+                        )
+              }
+            ) 
+          : 
+            alert('Erro ao se inscrever no topico: ' + err);
         }.bind(this)
-      );
-
-      //this.client.subscribe('financeiro/cadastro/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/excluir',  function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/cadastro/nova',     function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-  
+      );  
     }.bind(this));
     
     this.client.on('message', function (topic, message) {
@@ -79,7 +84,7 @@ export default class NovaContaForm extends Component {
     this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
       this.client.unsubscribe(this.state.topics[key].topic, function(err) 
         { 
-          err && console.log('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+          err && alert('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
         }
       )
     )
@@ -89,6 +94,27 @@ export default class NovaContaForm extends Component {
   handleError(msg) {
     alert('Erro: ' + msg);
   }
+
+  handleIncluir() {
+    // enviar dados para fila
+      this.client.publish.bind(
+            this.client, 
+            'financeiro/cadastro/contas/incluir/' + this.props.clientId, 
+            JSON.stringify(omit(this.state, 'topics'))
+          )  
+    this.props.onClose && this.props.onClose();
+  } 
+
+  handleSaveOk(msg) {
+    alert('Salvo com sucesso: ' + msg);
+  }
+
+  /*handleEdit(value) {
+ // value is an ISO String. 
+    this.setState({
+      [value.target.id]: value.target.value
+    });
+  }*/
 
   handleChangeBanco(event) {
     this.setState({ banco: event.target.value })
@@ -106,18 +132,9 @@ export default class NovaContaForm extends Component {
     this.setState({ descricao: event.target.value })
   }
 
-  //numeros somente   /[0-9]*/
-  //letras somente    /[a-zA-Z\s]*/
-  //Alfanumerico      /[0-9a-zA-Z\s]*/
-  //telefone          /^\(?[1-9]\d{2}[\)\-]\s?\d{3}\-\d{4}$/
-  //URL padrão        /^((http|ftp|https):\/\/w{3}[\d]*.|(http|ftp|https):\/\/|w{3}[\d]*.)([\w\d\._\-#\(\)\[\]\,;:]+@[\w\d\._\-#\(\)\[\]\,;:])?([a-z0-9]+.)*[a-z\-0-9]+.([a-z]{2,3})?[a-z]{2,6}(:[0-9]+)?(\/[\/a-z0-9\._\-,]+)*[a-z0-9\-_\.\s\%]+(\?[a-z0-9=%&\.\-,#]+)?$/
-  //Email valido      /^([a-zA-Z0-9]+[a-zA-Z0-9._%\-\+]*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,4})$/
-
-
   BancoValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.banco.length;
-    //if (length < 3) {return 'error';}
     if (regex.test(this.state.banco)&&(length>3)){
       return 'success';
     } else {
@@ -128,7 +145,6 @@ export default class NovaContaForm extends Component {
   AgenciaValidationState() {
     var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
     const length = this.state.agencia.length;
-    //if (length < 3) {return 'error';}
     if (regex.test(this.state.agencia)&&(length>3)&&((this.state.agencia)!==(this.state.conta))){
       return 'success';
     } else {
@@ -139,10 +155,8 @@ export default class NovaContaForm extends Component {
   ContaValidationState() {
     var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
     const length = this.state.conta.length;
-    //console.log(regex.test(this.state.conta));
- //   if (length > 5) {
-      if (regex.test(this.state.conta)&&(length>3)){
-        //console.log('Chamou' + this.state.conta);
+    if (regex.test(this.state.conta)&&(length>3)){
+      //console.log('Chamou' + this.state.conta);
       return 'success';
     } else {
       return 'error';
@@ -152,7 +166,6 @@ export default class NovaContaForm extends Component {
   DescricaoValidationState() {
     var regex = /^\s*[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.descricao.length;
-    //if (length < 30) {return 'success';}
     if (regex.test(this.state.descricao)&&(length<20)){
       //console.log('valor = ' + (this.state.descricao));
       return 'success';
@@ -160,43 +173,7 @@ export default class NovaContaForm extends Component {
       return 'error';
     }
   }
-  
-  handleSave() {
-    // enviar dados para fila
-    // esta fila é o retorno da operação
-    this.client.subscribe('financeiro/cadastro/alterado/' + this.state._id, function(err, granted) {
-      if (err) {
-        alert('Erro ao se inscrever no topico: ' + granted[0].topic)
-      } else {
-        this.setState(
-          {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
-          this.client.publish.bind(
-            this.client, 
-            'financeiro/cadastro/alterar/' + this.props.clientId, 
-            JSON.stringify(omit(this.state, 'topics'))
-          )  
-        );
-      }
-      
-    }.bind(this)); 
-    this.props.onClose && this.props.onClose();
-  }
-
-  handleSaveOk(msg) {
-    alert('Salvo com sucesso: ' + msg);
-  }
-
-  handleDelete(id) {
-
-  }
-
-  handleEdit(value) {
- // value is an ISO String. 
-    this.setState({
-      [value.target.id]: value.target.value
-    });
-  } 
-
+ 
   render() {
 
     return(
@@ -230,7 +207,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Close</Button>
-            <Button bsStyle="primary" onClick={this.handleSave} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Save changes</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Save changes</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
@@ -238,11 +215,9 @@ export default class NovaContaForm extends Component {
   }
 }
 
-NovaContaForm.propTypes = {
-  clientId: React.PropTypes.string,
-  onClose: React.PropTypes.func,
-  banco: React.PropTypes.string,
-  agencia: React.PropTypes.string,
-  conta: React.PropTypes.string,
-  descricao: React.PropTypes.string,
-} 
+//numeros somente   /[0-9]*/
+//letras somente    /[a-zA-Z\s]*/
+//Alfanumerico      /[0-9a-zA-Z\s]*/
+//telefone          /^\(?[1-9]\d{2}[\)\-]\s?\d{3}\-\d{4}$/
+//URL padrão        /^((http|ftp|https):\/\/w{3}[\d]*.|(http|ftp|https):\/\/|w{3}[\d]*.)([\w\d\._\-#\(\)\[\]\,;:]+@[\w\d\._\-#\(\)\[\]\,;:])?([a-z0-9]+.)*[a-z\-0-9]+.([a-z]{2,3})?[a-z]{2,6}(:[0-9]+)?(\/[\/a-z0-9\._\-,]+)*[a-z0-9\-_\.\s\%]+(\?[a-z0-9=%&\.\-,#]+)?$/
+//Email valido      /^([a-zA-Z0-9]+[a-zA-Z0-9._%\-\+]*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,4})$/

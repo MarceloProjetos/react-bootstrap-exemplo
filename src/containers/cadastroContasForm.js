@@ -106,11 +106,11 @@ export default class LancamentoForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro.cadastro.contas.erros.'    + this.props.clientId, 
-        'financeiro.cadastro.contas.search.'   + this.props.clientId,
-        'financeiro.cadastro.contas.incluido.', 
-        'financeiro.cadastro.contas.alterado.', 
-        'financeiro.cadastro.contas.excluido.'], 
+        ['financeiro/cadastro/contas/erros/'   + this.props.clientId, 
+        'financeiro/cadastro/contas/search/'   + this.props.clientId,
+        'financeiro/cadastro/contas/incluido/', 
+        'financeiro/cadastro/contas/alterado/', 
+        'financeiro/cadastro/contas/excluido/'], 
          function(err, granted) { 
           !err ? 
             this.setState(
