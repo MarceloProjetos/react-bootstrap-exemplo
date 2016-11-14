@@ -135,7 +135,7 @@ export default class LancamentoForm extends Component {
     
     this.client.on('message', function (topic, message) {
       // message is Buffer
-      console.log(message.toString())
+      //console.log(message.toString())
       
       // this.state.topics[topic] && this.handleError(message.toString());
       this.state.topics[topic] && this.state.topics[topic](message.toString()); 
@@ -163,19 +163,19 @@ export default class LancamentoForm extends Component {
     alert('Erro: ' + msg);
   }
 
-    handleSearch(msg) {
+  handleSearch(msg) {
     alert('search: ' + msg);
   }
 
-    handleIncluido(msg) {
+  handleIncluido(msg) {
     alert('incluido: ' + msg);
   }
 
-    handleAlterado(msg) {
+  handleAlterado(msg) {
     alert('alterado: ' + msg);
   }
 
-    handleExcluido(msg) {
+  handleExcluido(msg) {
     alert('excluido: ' + msg);
   }
 

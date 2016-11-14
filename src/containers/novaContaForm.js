@@ -19,7 +19,8 @@ export default class NovaContaForm extends Component {
       banco: '',
       agencia: '',
       conta: '',
-      descricao: ''
+      descricao: '',
+      topics: {}
     }
 
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
@@ -41,7 +42,7 @@ export default class NovaContaForm extends Component {
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: this.props.clientId
+      clientId: 'AdcionarConta_' + (1 + Math.random() * 4294967295).toString(16)
     }
 
     this.client = mqtt.connect(opts);
@@ -97,11 +98,10 @@ export default class NovaContaForm extends Component {
 
   handleIncluir() {
     // enviar dados para fila
-      this.client.publish.bind(
-            this.client, 
-            'financeiro/cadastro/contas/incluir/' + this.props.clientId, 
+    this.client.publish.bind(
+            this.client,'financeiro/cadastro/contas/incluir/' + this.props.clientId, 
             JSON.stringify(omit(this.state, 'topics'))
-          )  
+          );
     this.props.onClose && this.props.onClose();
   } 
 
@@ -207,7 +207,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Close</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Save changes</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Adicionar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
