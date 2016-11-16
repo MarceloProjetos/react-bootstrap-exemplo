@@ -16,10 +16,12 @@ export default class NovaContaForm extends Component {
     super(props);
 
     this.state = {
-      banco: '',
-      agencia: '',
-      conta: '',
-      descricao: '',
+      banco: 'AAAAA',
+      agencia: '12345',
+      conta: '67890',
+      descricao: 'TESTE',
+
+      // armazena os topicos que estou subscrito
       topics: {}
     }
 
@@ -34,7 +36,7 @@ export default class NovaContaForm extends Component {
   }
 
   componentWillMount() {
-    var opts = {
+    let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
       protocol: 'ws',
@@ -51,7 +53,7 @@ export default class NovaContaForm extends Component {
 
       this.client.subscribe(
         ['financeiro/cadastro/contas/erros/'  + this.props.clientId, 
-        'financeiro/cadastro/contas/incluir/' + this.props.clientId],
+        'financeiro/cadastro/contas/incluido/' + this.props.clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -60,7 +62,7 @@ export default class NovaContaForm extends Component {
                           this.state.topics, 
                           {
                             [granted[0].topic]: this.handleError,   
-                            [granted[1].topic]: this.handleIncluir
+                            [granted[1].topic]: this.handleSaveOk
                           }
                         )
               }
@@ -78,18 +80,16 @@ export default class NovaContaForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
     }.bind(this))
-
   }
 
   componentWillUnmount() {
-    this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
-      this.client.unsubscribe(this.state.topics[key].topic, function(err) 
+    this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
+      this.client.unsubscribe(topic, function(err) 
         { 
-          err && alert('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+          err && alert('Erro ao retirar a inscrição ao topico: ' + topic)
         }
       )
     )
-    this.client.end();
   }
 
   handleError(msg) {
@@ -98,15 +98,15 @@ export default class NovaContaForm extends Component {
 
   handleIncluir() {
     // enviar dados para fila
-    this.client.publish.bind(
-            this.client,'financeiro/cadastro/contas/incluir/' + this.props.clientId, 
+    this.client.publish(
+            'financeiro/cadastro/contas/incluir/' + this.props.clientId, 
             JSON.stringify(omit(this.state, 'topics'))
           );
-    this.props.onClose && this.props.onClose();
   } 
 
   handleSaveOk(msg) {
-    alert('Salvo com sucesso: ' + msg);
+    alert('Salvo com sucesso#: ' + msg);
+    this.props.onClose && this.props.onClose();
   }
 
   /*handleEdit(value) {

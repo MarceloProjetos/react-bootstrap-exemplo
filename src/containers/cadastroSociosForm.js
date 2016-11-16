@@ -79,7 +79,6 @@ export default class LancamentoForm extends Component {
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      //let topics = {};
 
       this.client.subscribe(
         'financeiro/cadastro/erros/' + opts.clientId, 
@@ -112,14 +111,13 @@ export default class LancamentoForm extends Component {
   }
 
   componentWillUnmount() {
-    this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
-      this.client.unsubscribe(this.state.topics[key].topic, function(err) 
+    this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
+      this.client.unsubscribe(topic, function(err) 
         { 
-          err && console.log('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+          err && console.log('Erro ao retirar a inscrição ao topico: ' + topic)
         }
       )
     )
-    this.client.end();
   }
 
   handleError(msg) {

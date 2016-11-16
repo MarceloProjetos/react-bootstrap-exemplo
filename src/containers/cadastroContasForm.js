@@ -14,6 +14,8 @@ import {
   OverlayTrigger
 } from 'react-bootstrap';
 
+import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+
 import uuid               from 'node-uuid';
 import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
@@ -25,9 +27,9 @@ export default class LancamentoForm extends Component {
     super(props);
 
     this.state = { 
-      _id: uuid.v4(),
       contas: [
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'NOSSA CAIXA',
           conta: '00100020003-6',
@@ -35,6 +37,7 @@ export default class LancamentoForm extends Component {
           descricao: 'Primeiro conta'
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'BRADESCO',
           conta: '20256-9',
@@ -42,6 +45,7 @@ export default class LancamentoForm extends Component {
           descricao: 'Segunda conta'
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'ITAU',
           conta: '20256-9',
@@ -49,6 +53,7 @@ export default class LancamentoForm extends Component {
           descricao: 'TERCEIRA conta'
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'BANCO DO BRASIL',
           conta: '20256-9',
@@ -56,6 +61,7 @@ export default class LancamentoForm extends Component {
           descricao: 'Outra conta'
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'HSBC',
           conta: '20256-9',
@@ -63,6 +69,7 @@ export default class LancamentoForm extends Component {
           descricao: 'Escreva qualquer coisa aqui que ajude!'
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'ALTAMIRA',
           conta: '20256-9',
@@ -70,6 +77,7 @@ export default class LancamentoForm extends Component {
           descricao: 'Empresa '
         },
         {
+          _id: uuid.v4(),
           selecionada: false,
           banco: 'CELSO',
           conta: '20256-9',
@@ -98,7 +106,7 @@ export default class LancamentoForm extends Component {
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: this.props.clientId
+      clientId: 'CadastroConta_' +this.props.clientId
     }
 
     this.client = mqtt.connect(opts);
@@ -107,7 +115,7 @@ export default class LancamentoForm extends Component {
 
       this.client.subscribe(
         ['financeiro/cadastro/contas/erros/'   + this.props.clientId, 
-        'financeiro/cadastro/contas/search/'   + this.props.clientId,
+        'financeiro/cadastro/contas/search/',
         'financeiro/cadastro/contas/incluido/', 
         'financeiro/cadastro/contas/alterado/', 
         'financeiro/cadastro/contas/excluido/'], 
@@ -135,24 +143,22 @@ export default class LancamentoForm extends Component {
     
     this.client.on('message', function (topic, message) {
       // message is Buffer
-      //console.log(message.toString())
+      console.log(message.toString())
       
       // this.state.topics[topic] && this.handleError(message.toString());
       this.state.topics[topic] && this.state.topics[topic](message.toString()); 
 
     }.bind(this))
-
   }
 
   componentWillUnmount() {
-    this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
-      this.client.unsubscribe(this.state.topics[key].topic, function(err) 
+    this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
+      this.client.unsubscribe(topic, function(err) 
         { 
-          err && console.log('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+          err && console.log('Erro ao retirar a inscrição ao topico: ' + topic)
         }
       )
     )
-    this.client.end();
   }
 
   handleClose() {
@@ -168,7 +174,7 @@ export default class LancamentoForm extends Component {
   }
 
   handleIncluido(msg) {
-    alert('incluido: ' + msg);
+    alert('incluido 2: ' + msg);
   }
 
   handleAlterado(msg) {
@@ -202,7 +208,7 @@ export default class LancamentoForm extends Component {
           {
             form: 
               <EditarContaForm 
-                //clientId={this.state.clientId}
+                clientId={this.state.clientId}
                 title="Editar Conta cadastrada"
                 onClose={this.handleClose.bind(this)} 
                 //onSave={this.handleSave.bind(this)} 
@@ -247,7 +253,15 @@ export default class LancamentoForm extends Component {
 
   render() {
     //const canSave = true;
-
+    function format(cell, row){
+      return '<i class="glyphicon glyphicon-usd"></i> ' + cell;
+    }
+    //Row select setting
+    var selectRowProp = {
+      mode: "checkbox",  //checkbox for multi select, radio for single select.
+      clickToSelect: true,   //click row will trigger a selection on that row.
+      bgColor: "rgb(238, 193, 213)"   //selected row background color
+    };
     return (
       <div>
         <Row>
@@ -343,6 +357,7 @@ export default class LancamentoForm extends Component {
                 </Row>
                 <Row>
                   <Col xs={12} md={12}>
+                   
                     <Table striped bordered condensed hover>
                       <thead>
                         <tr>
@@ -363,19 +378,30 @@ export default class LancamentoForm extends Component {
                             <td>{k.descricao}</td>
                           </tr>
                         )}
- 
-
-                      </tbody>
+                       </tbody>
                     </Table>
+                        <BootstrapTable
+                          data={this.state.contas}
+                          striped={true}
+                          hover={true}
+                          condensed={true}
+                          pagination={true}
+                          selectRow={selectRowProp}
+                          insertRow={true}
+                          deleteRow={true}
+                          columnFilter={true}
+                          search={true}>
+                          <TableHeaderColumn dataField="_id" isKey={true} dataAlign="right" dataSort={true}>Product ID</TableHeaderColumn>
+                          <TableHeaderColumn dataField="selecionada" dataAlign="right" dataSort={true}>Product ID</TableHeaderColumn>
+                          <TableHeaderColumn dataField="banco" dataSort={true}>Product Name</TableHeaderColumn>
+                          <TableHeaderColumn dataField="agencia" dataAlign="center" dataFormat={format}>Product Price</TableHeaderColumn>
+                          <TableHeaderColumn dataField="conta" dataAlign="center" dataFormat={format}>Product Price</TableHeaderColumn>
+                        </BootstrapTable>
                   </Col>
                 </Row>
-           
-
             </Panel>
-
           </Col>
           <Col md={1} />
-
         </Row>
 
       {this.state.form}

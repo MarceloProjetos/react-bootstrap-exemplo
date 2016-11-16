@@ -13,6 +13,7 @@
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.6",
     "react-bootstrap-date-picker": "^3.7.0",
+    "react-bootstrap-table": "^2.5.8",
     "react-dom": "^15.3.2"
   },
   "scripts": {
