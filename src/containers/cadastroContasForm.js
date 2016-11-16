@@ -258,7 +258,7 @@ export default class LancamentoForm extends Component {
     }
     //Row select setting
     var selectRowProp = {
-      mode: "checkbox",  //checkbox for multi select, radio for single select.
+      mode: "radio",  //checkbox for multi select, radio for single select.
       clickToSelect: true,   //click row will trigger a selection on that row.
       bgColor: "rgb(238, 193, 213)"   //selected row background color
     };
@@ -357,29 +357,7 @@ export default class LancamentoForm extends Component {
                 </Row>
                 <Row>
                   <Col xs={12} md={12}>
-                   
-                    <Table striped bordered condensed hover>
-                      <thead>
-                        <tr>
-                          <th>Ação</th>
-                          <th>Banco</th>
-                          <th>Conta</th>
-                          <th>Agência</th>
-                          <th>Descrição</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {this.state.contas.map( (k, i) => 
-                          <tr key={'tr-' + i} >
-                            <td><Radio value={k.selecionada} /></td>
-                            <td>{k.banco}</td>
-                            <td>{k.conta}</td>
-                            <td>{k.agencia}</td>
-                            <td>{k.descricao}</td>
-                          </tr>
-                        )}
-                       </tbody>
-                    </Table>
+                    <div><span> <br/> </span></div>
                         <BootstrapTable
                           data={this.state.contas}
                           striped={true}
@@ -389,13 +367,12 @@ export default class LancamentoForm extends Component {
                           selectRow={selectRowProp}
                           insertRow={true}
                           deleteRow={true}
-                          columnFilter={true}
                           search={true}>
-                          <TableHeaderColumn dataField="_id" isKey={true} dataAlign="right" dataSort={true}>Product ID</TableHeaderColumn>
-                          <TableHeaderColumn dataField="selecionada" dataAlign="right" dataSort={true}>Product ID</TableHeaderColumn>
-                          <TableHeaderColumn dataField="banco" dataSort={true}>Product Name</TableHeaderColumn>
-                          <TableHeaderColumn dataField="agencia" dataAlign="center" dataFormat={format}>Product Price</TableHeaderColumn>
-                          <TableHeaderColumn dataField="conta" dataAlign="center" dataFormat={format}>Product Price</TableHeaderColumn>
+                          <TableHeaderColumn dataField="_id" isKey={true} dataAlign="center" hidden={true} dataSort={true}>Product ID</TableHeaderColumn>
+                          <TableHeaderColumn dataField="banco" dataSort={true}>BANCO</TableHeaderColumn>
+                          <TableHeaderColumn dataField="agencia" dataAlign="center">CONTA</TableHeaderColumn>
+                          <TableHeaderColumn dataField="conta" dataAlign="center">AGÊNCIA</TableHeaderColumn>
+                          <TableHeaderColumn dataField="descricao" dataAlign="center">DESCRIÇÃO</TableHeaderColumn>
                         </BootstrapTable>
                   </Col>
                 </Row>
