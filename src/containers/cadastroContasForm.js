@@ -7,8 +7,6 @@ import {
   Glyphicon, 
   Row, 
   Col,
-  Table,
-  Radio,
   Tooltip,
   Alert,
   OverlayTrigger
@@ -27,64 +25,7 @@ export default class LancamentoForm extends Component {
     super(props);
 
     this.state = { 
-      contas: [
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'NOSSA CAIXA',
-          conta: '00100020003-6',
-          agencia: '1653',
-          descricao: 'Primeiro conta'
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'BRADESCO',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: 'Segunda conta'
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'ITAU',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: 'TERCEIRA conta'
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'BANCO DO BRASIL',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: 'Outra conta'
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'HSBC',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: 'Escreva qualquer coisa aqui que ajude!'
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'ALTAMIRA',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: 'Empresa '
-        },
-        {
-          _id: uuid.v4(),
-          selecionada: false,
-          banco: 'CELSO',
-          conta: '20256-9',
-          agencia: '2667',
-          descricao: '123456789012345678901234567890'
-        }        
-      ],
+      contas: [],
       topics: {}
     }
 
@@ -170,7 +111,8 @@ export default class LancamentoForm extends Component {
   }
 
   handleSearch(msg) {
-    alert('search: ' + msg);
+    //alert('search: ' + msg);
+    this.setState({contas:JSON.parse(msg)});
   }
 
   handleIncluido(msg) {
@@ -252,10 +194,6 @@ export default class LancamentoForm extends Component {
   }
 
   render() {
-    //const canSave = true;
-    function format(cell, row){
-      return '<i class="glyphicon glyphicon-usd"></i> ' + cell;
-    }
     //Row select setting
     var selectRowProp = {
       mode: "radio",  //checkbox for multi select, radio for single select.
@@ -360,19 +298,21 @@ export default class LancamentoForm extends Component {
                     <div><span> <br/> </span></div>
                         <BootstrapTable
                           data={this.state.contas}
+                          remote={ true }
                           striped={true}
                           hover={true}
                           condensed={true}
-                          pagination={true}
+                          pagination={false}
                           selectRow={selectRowProp}
-                          insertRow={true}
-                          deleteRow={true}
+                          //insertRow={true}
+                          //deleteRow={true}
+                          options={ { onDeleteRow: this.props.onDeleteRow } }
                           search={true}>
-                          <TableHeaderColumn dataField="_id" isKey={true} dataAlign="center" hidden={true} dataSort={true}>Product ID</TableHeaderColumn>
-                          <TableHeaderColumn dataField="banco" dataSort={true}>BANCO</TableHeaderColumn>
-                          <TableHeaderColumn dataField="agencia" dataAlign="center">CONTA</TableHeaderColumn>
-                          <TableHeaderColumn dataField="conta" dataAlign="center">AGÊNCIA</TableHeaderColumn>
-                          <TableHeaderColumn dataField="descricao" dataAlign="center">DESCRIÇÃO</TableHeaderColumn>
+                          <TableHeaderColumn dataField="_id" isKey={true} dataAlign="center" hidden={true}>Product ID</TableHeaderColumn>
+                          <TableHeaderColumn dataField="banco"                               dataSort={true}>BANCO</TableHeaderColumn>
+                          <TableHeaderColumn dataField="agencia"          dataAlign="center">CONTA</TableHeaderColumn>
+                          <TableHeaderColumn dataField="conta"            dataAlign="center">AGÊNCIA</TableHeaderColumn>
+                          <TableHeaderColumn dataField="descricao"        dataAlign="center">DESCRIÇÃO</TableHeaderColumn>
                         </BootstrapTable>
                   </Col>
                 </Row>
