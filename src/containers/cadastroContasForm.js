@@ -14,7 +14,7 @@ import {
 
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 
-import uuid               from 'node-uuid';
+//import uuid               from 'node-uuid';
 import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
@@ -32,10 +32,17 @@ export default class LancamentoForm extends Component {
     this.handleClose    = this.handleClose.bind(this);
     this.handleClick    = this.handleClick.bind(this);
     this.handleError    = this.handleError.bind(this);
-    this.handleSearch   = this.handleSearch.bind(this);
+    this.handleCarregar = this.handleCarregar.bind(this);
     this.handleIncluido = this.handleIncluido.bind(this);
     this.handleAlterado = this.handleAlterado.bind(this);
     this.handleExcluido = this.handleExcluido.bind(this);
+
+    this.onRowSelect = this.onRowSelect.bind(this);
+  }
+
+  carregaLista() {
+    // enviar dados para fila
+    this.client.publish('financeiro/cadastro/contas/carregar/',JSON.stringify('Carregar lista '));
   }
 
   componentWillMount() {
@@ -47,7 +54,7 @@ export default class LancamentoForm extends Component {
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: 'CadastroConta_' +this.props.clientId
+      clientId: 'CadastroConta_' + (1 + Math.random() * 4294967295).toString(16)
     }
 
     this.client = mqtt.connect(opts);
@@ -56,7 +63,7 @@ export default class LancamentoForm extends Component {
 
       this.client.subscribe(
         ['financeiro/cadastro/contas/erros/'   + this.props.clientId, 
-        'financeiro/cadastro/contas/search/',
+        'financeiro/cadastro/contas/carregado/',
         'financeiro/cadastro/contas/incluido/', 
         'financeiro/cadastro/contas/alterado/', 
         'financeiro/cadastro/contas/excluido/'], 
@@ -68,13 +75,14 @@ export default class LancamentoForm extends Component {
                           this.state.topics, 
                           {
                             [granted[0].topic]: this.handleError,   
-                            [granted[1].topic]: this.handleSearch,  
+                            [granted[1].topic]: this.handleCarregar,  
                             [granted[2].topic]: this.handleIncluido, 
                             [granted[3].topic]: this.handleAlterado, 
                             [granted[4].topic]: this.handleExcluido 
                           }
                         )
-              }
+              },
+              this.carregaLista
             ) 
           : 
             alert('Erro ao se inscrever no topico: ' + err);
@@ -90,6 +98,8 @@ export default class LancamentoForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString()); 
 
     }.bind(this))
+
+
   }
 
   componentWillUnmount() {
@@ -110,7 +120,7 @@ export default class LancamentoForm extends Component {
     alert('Erro: ' + msg);
   }
 
-  handleSearch(msg) {
+  handleCarregar(msg) {
     //alert('search: ' + msg);
     this.setState({contas:JSON.parse(msg)});
   }
@@ -193,12 +203,19 @@ export default class LancamentoForm extends Component {
     }
   }
 
+  onRowSelect(row, isSelected){
+    console.log(row);
+    console.log("selected: " + isSelected)
+    this.setState({isSelected: isSelected})
+  }
+
   render() {
     //Row select setting
-    var selectRowProp = {
+    const selectRowProp = {
       mode: "radio",  //checkbox for multi select, radio for single select.
       clickToSelect: true,   //click row will trigger a selection on that row.
-      bgColor: "rgb(238, 193, 213)"   //selected row background color
+      bgColor: "rgb(230, 190, 200)",   //selected row background color
+      onSelect: this.onRowSelect,
     };
     return (
       <div>
@@ -207,10 +224,7 @@ export default class LancamentoForm extends Component {
           <Col md={1} />
           <Col md={10} >
 
-            <h4>ClientId: {this.props.clientId}</h4>
-
             <Panel header={'Cadastro de Conta Corrente'} bsStyle="primary" >
-
 
                 <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
                   <Col xs={6} md={2} >
@@ -239,7 +253,7 @@ export default class LancamentoForm extends Component {
 
                         <Button
                           bsSize="large"
-                          disabled={!this.state.id}
+                          disabled={!this.state.isSelected}
                           onClick={this.handleClick.bind(this, 'Editar')}
                           style={{width: 100}}
                         >
@@ -258,7 +272,7 @@ export default class LancamentoForm extends Component {
                     >
                         <Button
                           bsSize="large"
-                          disabled={!this.state.id}
+                          disabled={!this.state.isSelected}
                           onClick={this.handleClick.bind(this, 'Delete')}
                           style={{width: 100}}
                         >
@@ -304,9 +318,6 @@ export default class LancamentoForm extends Component {
                           condensed={true}
                           pagination={false}
                           selectRow={selectRowProp}
-                          //insertRow={true}
-                          //deleteRow={true}
-                          options={ { onDeleteRow: this.props.onDeleteRow } }
                           search={true}>
                           <TableHeaderColumn dataField="_id" isKey={true} dataAlign="center" hidden={true}>Product ID</TableHeaderColumn>
                           <TableHeaderColumn dataField="banco"                               dataSort={true}>BANCO</TableHeaderColumn>
@@ -327,3 +338,5 @@ export default class LancamentoForm extends Component {
     );
   }
 }
+
+//<h4>ClientId: {this.props.clientId}</h4>
