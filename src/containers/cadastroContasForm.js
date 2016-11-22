@@ -214,7 +214,7 @@ export default class LancamentoForm extends Component {
     const selectRowProp = {
       mode: "radio",  //checkbox for multi select, radio for single select.
       clickToSelect: true,   //click row will trigger a selection on that row.
-      bgColor: "rgb(230, 190, 200)",   //selected row background color
+      bgColor: "rgb(255, 200, 20)",   //selected row background color
       onSelect: this.onRowSelect,
     };
     return (

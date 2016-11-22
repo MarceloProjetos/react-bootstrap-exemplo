@@ -8,6 +8,7 @@ import {
   Modal
 } from 'react-bootstrap';
 
+import uuid               from 'node-uuid';
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
@@ -16,10 +17,12 @@ export default class NovaContaForm extends Component {
     super(props);
 
     this.state = {
-      banco: 'AAAAA',
-      agencia: '12345',
-      conta: '67890',
-      descricao: 'TESTE',
+      _id:    uuid.v4(),
+      selecionada: false,
+      banco:  '',
+      conta:  '',
+      agencia: '',
+      descricao: '',
 
       // armazena os topicos que estou subscrito
       topics: {}
@@ -105,7 +108,7 @@ export default class NovaContaForm extends Component {
   } 
 
   handleSaveOk(msg) {
-    alert('Salvo com sucesso#: ' + msg);
+    //alert('Salvo com sucesso#: ' + msg);
     this.props.onClose && this.props.onClose();
   }
 
