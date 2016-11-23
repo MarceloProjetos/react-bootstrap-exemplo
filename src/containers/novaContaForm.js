@@ -209,7 +209,7 @@ export default class NovaContaForm extends Component {
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.props.onClose} >Close</Button>
+            <Button onClick={this.props.onClose} >Fechar</Button>
             <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>

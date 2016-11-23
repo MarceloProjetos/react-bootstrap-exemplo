@@ -16,8 +16,8 @@ export default class NovaContaForm extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      _id:    uuid.v4(),
+    this.state = omit({...this.props, topics: {}}, 'children');
+      /*_id:    ,
       selecionada: false,
       banco:  'ALTAMIRA',
       conta:  '9634',
@@ -26,7 +26,7 @@ export default class NovaContaForm extends Component {
 
       // armazena os topicos que estou subscrito
       topics: {}
-    }
+    }*/
 
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
@@ -39,6 +39,8 @@ export default class NovaContaForm extends Component {
   }
 
   componentWillMount() {
+    //this.setState(this.props);
+
     let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
@@ -85,6 +87,10 @@ export default class NovaContaForm extends Component {
     }.bind(this))
   }
 
+  /*componentWillReceiveProps(newProps) {
+    this.setState({...newProps});
+  }*/
+
   componentWillUnmount() {
     this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
       this.client.unsubscribe(topic, function(err) 
@@ -100,11 +106,12 @@ export default class NovaContaForm extends Component {
   }
 
   handleIncluir() {
+    console.log('ClientID: ' + this.props.clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
     // enviar dados para fila
     this.client.publish(
-            'financeiro/cadastro/contas/alterar/' + this.props.clientId, 
-            JSON.stringify(omit(this.state, 'topics'))
-          );
+      'financeiro/cadastro/contas/alterar/' + this.props.clientId, 
+      JSON.stringify(omit(this.state, 'topics'))
+    );
   } 
 
   handleSaveOk(msg) {
@@ -209,8 +216,8 @@ export default class NovaContaForm extends Component {
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.props.onClose} >Close</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
+            <Button onClick={this.props.onClose} >Fechar</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Modificar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>

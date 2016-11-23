@@ -20,11 +20,15 @@ import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
 import EditarContaForm    from './EditarContaForm';
  
+const clientId = 'mqtt_' + (1 + Math.random() * 4294967295).toString(16);
+
 export default class LancamentoForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = { 
+      conta: null,
+
       contas: [],
 
       // armazena os topicos que estou subscrito
@@ -48,6 +52,8 @@ export default class LancamentoForm extends Component {
   }
 
   componentWillMount() {
+    console.log('ClientID: ' + clientId);
+
     let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
@@ -56,7 +62,7 @@ export default class LancamentoForm extends Component {
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: 'CadastroConta_' + (1 + Math.random() * 4294967295).toString(16)
+      clientId: clientId
     }
 
     this.client = mqtt.connect(opts);
@@ -64,7 +70,7 @@ export default class LancamentoForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/erros/'   + this.props.clientId, 
+        ['financeiro/cadastro/contas/erros/'   + clientId, 
         'financeiro/cadastro/contas/carregado/',
         'financeiro/cadastro/contas/incluido/', 
         'financeiro/cadastro/contas/alterado/', 
@@ -128,7 +134,7 @@ export default class LancamentoForm extends Component {
   }
 
   handleIncluido(msg) {
-    alert('incluido 2: ' + msg);
+    alert('incluido: ' + msg);
   }
 
   handleAlterado(msg) {
@@ -146,7 +152,7 @@ export default class LancamentoForm extends Component {
           {
             form: 
               <NovaContaForm 
-                clientId={this.props.clientId}
+                clientId={clientId}
                 title="Cadastrar nova Contas"
                 onClose={this.handleClose.bind(this)} 
                 //onSave={this.handleSave.bind(this)} 
@@ -162,11 +168,10 @@ export default class LancamentoForm extends Component {
           {
             form: 
               <EditarContaForm 
-                clientId={this.state.clientId}
+                clientId={clientId}
                 title="Editar Conta cadastrada"
                 onClose={this.handleClose.bind(this)} 
-                //onSave={this.handleSave.bind(this)} 
-                //{...this.state.lista[i]}
+                {...this.state.conta}
               >
                   <span>Algo deu errado para achar o form CadastroContas</span>
               </EditarContaForm> 
@@ -178,11 +183,10 @@ export default class LancamentoForm extends Component {
           {
             form: 
               <EditarContaForm 
-                clientId={this.state.clientId}
+                clientId={clientId}
                 nome="Deletar Cadastro?"
                 onClose={this.handleClose.bind(this)} 
                 //onSave={this.handleSave.bind(this)} 
-                //{...this.state.lista[i]}
               >
                   <span>Algo deu errado para achar o form CadastroContas</span>
               </EditarContaForm> 
@@ -208,7 +212,7 @@ export default class LancamentoForm extends Component {
   onRowSelect(row, isSelected){
     console.log(row);
     console.log("selected: " + isSelected)
-    this.setState({isSelected: isSelected})
+    this.setState({isSelected: isSelected, conta: row})
   }
 
   render() {
