@@ -26,6 +26,8 @@ export default class LancamentoForm extends Component {
 
     this.state = { 
       contas: [],
+
+      // armazena os topicos que estou subscrito
       topics: {}
     }
 

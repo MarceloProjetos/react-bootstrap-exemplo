@@ -19,8 +19,8 @@ export default class NovaContaForm extends Component {
     this.state = {
       _id:    uuid.v4(),
       selecionada: false,
-      banco:  '',
-      conta:  '',
+      banco:  'ALTAMIRA',
+      conta:  '9634',
       agencia: '',
       descricao: '',
 
@@ -210,7 +210,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Close</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.DescricaoValidationState() || this.ContaValidationState() || this.AgenciaValidationState())!=='success'}>Adicionar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
