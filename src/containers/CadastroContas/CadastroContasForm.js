@@ -17,7 +17,7 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 //import uuid               from 'node-uuid';
 import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
-import NovaContaForm      from './novaContaForm';
+import NovaContaForm      from './NovaContaForm';
 import EditarContaForm    from './EditarContaForm';
 import ExcluirContaForm   from './ExcluirContaForm';
  
