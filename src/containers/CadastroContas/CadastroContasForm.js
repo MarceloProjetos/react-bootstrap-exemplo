@@ -186,7 +186,7 @@ export default class LancamentoForm extends Component {
             form: 
               <ExcluirContaForm 
                 clientId={clientId}
-                nome="Deletar Cadastro?"
+                title="Deletar esta Conta?"
                 onClose={this.handleClose.bind(this)} 
                 {...this.state.conta} 
               >
