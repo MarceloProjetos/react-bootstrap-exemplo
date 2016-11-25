@@ -11,7 +11,7 @@ import {
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
-const clientId = 'EditarConta_' + (1 + Math.random() * 4294967295).toString(16);
+const clientId = 'ExcluirConta_' + (1 + Math.random() * 429495).toString(16);
 
 export default class NovaContaForm extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ export default class NovaContaForm extends Component {
 
       this.client.subscribe(
         ['financeiro/cadastro/contas/erros/'  + clientId, 
-        'financeiro/cadastro/contas/alterado/' + clientId],
+        'financeiro/cadastro/contas/excluido/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -100,7 +100,7 @@ export default class NovaContaForm extends Component {
     console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
     // enviar dados para fila
     this.client.publish(
-      'financeiro/cadastro/contas/alterar/' + clientId, 
+      'financeiro/cadastro/contas/excluir/' + clientId, 
       JSON.stringify(omit(this.state, 'topics'))
     );
   } 
@@ -208,7 +208,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Modificar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Excluir Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
