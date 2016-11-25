@@ -12,12 +12,14 @@ import uuid               from 'node-uuid';
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
+const clientId = 'AdcionarConta_' + (1 + Math.random() * 4294967295).toString(16);
+
 export default class NovaContaForm extends Component {
   constructor(props) {
     super(props);
 
-    this.state = omit({...this.props, topics: {}}, 'children');
-      /*_id:    ,
+    this.state = {
+      _id:    uuid.v4(),
       selecionada: false,
       banco:  'ALTAMIRA',
       conta:  '9634',
@@ -26,7 +28,7 @@ export default class NovaContaForm extends Component {
 
       // armazena os topicos que estou subscrito
       topics: {}
-    }*/
+    }
 
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
@@ -39,8 +41,6 @@ export default class NovaContaForm extends Component {
   }
 
   componentWillMount() {
-    //this.setState(this.props);
-
     let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
@@ -49,7 +49,7 @@ export default class NovaContaForm extends Component {
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: 'AdcionarConta_' + (1 + Math.random() * 4294967295).toString(16)
+      clientId: clientId
     }
 
     this.client = mqtt.connect(opts);
@@ -57,8 +57,7 @@ export default class NovaContaForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/erros/'  + this.props.clientId, 
-        'financeiro/cadastro/contas/alterado/' + this.props.clientId],
+        ['financeiro/cadastro/contas/incluido/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -66,8 +65,8 @@ export default class NovaContaForm extends Component {
                 topics: assign(
                           this.state.topics, 
                           {
-                            [granted[0].topic]: this.handleError,   
-                            [granted[1].topic]: this.handleSaveOk
+                            //[granted[0].topic]: this.handleError,   
+                            [granted[0].topic]: this.handleSaveOk
                           }
                         )
               }
@@ -85,11 +84,9 @@ export default class NovaContaForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
     }.bind(this))
+    console.log('ClientID criado em nova conta = ' + clientId + '\n');
+    console.log('this.props.clientId  recebido em nova conta = ' + this.props.clientId + '\n');
   }
-
-  /*componentWillReceiveProps(newProps) {
-    this.setState({...newProps});
-  }*/
 
   componentWillUnmount() {
     this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
@@ -99,6 +96,7 @@ export default class NovaContaForm extends Component {
         }
       )
     )
+    this.client.end();
   }
 
   handleError(msg) {
@@ -106,12 +104,11 @@ export default class NovaContaForm extends Component {
   }
 
   handleIncluir() {
-    console.log('ClientID: ' + this.props.clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
     // enviar dados para fila
     this.client.publish(
-      'financeiro/cadastro/contas/alterar/' + this.props.clientId, 
-      JSON.stringify(omit(this.state, 'topics'))
-    );
+            'financeiro/cadastro/contas/incluir/' + clientId, 
+            JSON.stringify(omit(this.state, 'topics'))
+          );
   } 
 
   handleSaveOk(msg) {
@@ -145,7 +142,7 @@ export default class NovaContaForm extends Component {
   BancoValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
     const length = this.state.banco.length;
-    if (regex.test(this.state.banco)&&(length>3)){
+    if (regex.test(this.state.banco)&&(length>3)&&(length<20)){
       return 'success';
     } else {
       return 'error';
@@ -155,7 +152,7 @@ export default class NovaContaForm extends Component {
   AgenciaValidationState() {
     var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
     const length = this.state.agencia.length;
-    if (regex.test(this.state.agencia)&&(length>3)&&((this.state.agencia)!==(this.state.conta))){
+    if (regex.test(this.state.agencia)&&(length>3)&&(length<20)&&((this.state.agencia)!==(this.state.conta))){
       return 'success';
     } else {
       return 'error';
@@ -165,7 +162,7 @@ export default class NovaContaForm extends Component {
   ContaValidationState() {
     var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
     const length = this.state.conta.length;
-    if (regex.test(this.state.conta)&&(length>3)){
+    if (regex.test(this.state.conta)&&(length>3)&&(length<20)){
       //console.log('Chamou' + this.state.conta);
       return 'success';
     } else {
@@ -217,7 +214,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Modificar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>

@@ -19,7 +19,6 @@ import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 import NovaContaForm      from './novaContaForm';
 import EditarContaForm    from './EditarContaForm';
-import ExcluirContaForm   from './ExcluirContaForm';
  
 const clientId = 'mqtt_' + (1 + Math.random() * 4294967295).toString(16);
 
@@ -175,7 +174,7 @@ export default class LancamentoForm extends Component {
                 onClose={this.handleClose.bind(this)} 
                 {...this.state.conta}
               >
-                  <span>Algo deu errado para achar o form EditarContas</span>
+                  <span>Algo deu errado para achar o form CadastroContas</span>
               </EditarContaForm> 
           }
         )
@@ -184,14 +183,14 @@ export default class LancamentoForm extends Component {
         this.setState(
           {
             form: 
-              <ExcluirContaForm 
+              <EditarContaForm 
                 clientId={clientId}
                 nome="Deletar Cadastro?"
                 onClose={this.handleClose.bind(this)} 
-                {...this.state.conta} 
+                //onSave={this.handleSave.bind(this)} 
               >
-                  <span>Algo deu errado para achar o form ExcluirContas</span>
-              </ExcluirContaForm> 
+                  <span>Algo deu errado para achar o form CadastroContas</span>
+              </EditarContaForm> 
           }
         )
         break;

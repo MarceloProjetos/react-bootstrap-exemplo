@@ -8,27 +8,16 @@ import {
   Modal
 } from 'react-bootstrap';
 
-import uuid               from 'node-uuid';
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
-const clientId = 'AdcionarConta_' + (1 + Math.random() * 4294967295).toString(16);
+const clientId = 'EditarConta_' + (1 + Math.random() * 4294967295).toString(16);
 
 export default class NovaContaForm extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      _id:    uuid.v4(),
-      selecionada: false,
-      banco:  'ALTAMIRA',
-      conta:  '9634',
-      agencia: '',
-      descricao: '',
-
-      // armazena os topicos que estou subscrito
-      topics: {}
-    }
+    this.state = omit({...this.props, topics: {}}, 'children');
 
     this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
@@ -41,6 +30,7 @@ export default class NovaContaForm extends Component {
   }
 
   componentWillMount() {
+
     let opts = {
       host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
       port: 61614,
@@ -57,7 +47,8 @@ export default class NovaContaForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/incluido/' + clientId],
+        ['financeiro/cadastro/contas/erros/'  + clientId, 
+        'financeiro/cadastro/contas/alterado/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -65,8 +56,8 @@ export default class NovaContaForm extends Component {
                 topics: assign(
                           this.state.topics, 
                           {
-                            //[granted[0].topic]: this.handleError,   
-                            [granted[0].topic]: this.handleSaveOk
+                            [granted[0].topic]: this.handleError,   
+                            [granted[1].topic]: this.handleSaveOk
                           }
                         )
               }
@@ -84,9 +75,11 @@ export default class NovaContaForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
     }.bind(this))
-    console.log('ClientID criado em nova conta = ' + clientId + '\n');
-    console.log('this.props.clientId  recebido em nova conta = ' + this.props.clientId + '\n');
   }
+
+  /*componentWillReceiveProps(newProps) {
+    this.setState({...newProps});
+  }*/
 
   componentWillUnmount() {
     this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
@@ -104,11 +97,12 @@ export default class NovaContaForm extends Component {
   }
 
   handleIncluir() {
+    console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
     // enviar dados para fila
     this.client.publish(
-            'financeiro/cadastro/contas/incluir/' + clientId, 
-            JSON.stringify(omit(this.state, 'topics'))
-          );
+      'financeiro/cadastro/contas/alterar/' + clientId, 
+      JSON.stringify(omit(this.state, 'topics'))
+    );
   } 
 
   handleSaveOk(msg) {
@@ -214,7 +208,7 @@ export default class NovaContaForm extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Modificar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>

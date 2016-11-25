@@ -15,7 +15,7 @@ import {
   Button,
 } from 'react-bootstrap';
 //Menu cadastro
-import CadastroContas     from './containers/cadastroContasForm';
+import CadastroContas     from './containers/CadastroContas/cadastroContasForm';
 import CadastroSocios     from './containers/cadastroSociosForm';
 //Menu Lançamento
 import MovimentoInclusao  from './containers/lancamentoInclusaoForm';
