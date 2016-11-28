@@ -19,10 +19,12 @@ export default class NovaContaForm extends Component {
 
     this.state = omit({...this.props, topics: {}}, 'children');
 
-    this.handleChangeBanco      = this.handleChangeBanco.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+
+    /*this.handleChangeBanco      = this.handleChangeBanco.bind(this);
     this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
     this.handleChangeConta      = this.handleChangeConta.bind(this);
-    this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);
+    this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);*/
 
     this.handleError            = this.handleError.bind(this);
     this.handleIncluir          = this.handleIncluir.bind(this);
@@ -54,7 +56,7 @@ export default class NovaContaForm extends Component {
             this.setState(
               {
                 topics: assign(
-                          this.state.topics, 
+                          this.state.record.topics, 
                           {
                             [granted[0].topic]: this.handleError,   
                             [granted[1].topic]: this.handleSaveOk
@@ -97,11 +99,11 @@ export default class NovaContaForm extends Component {
   }
 
   handleIncluir() {
-    console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
+    console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state.record, null, 2));
     // enviar dados para fila
     this.client.publish(
       'financeiro/cadastro/contas/alterar/' + clientId, 
-      JSON.stringify(omit(this.state, 'topics'))
+      JSON.stringify(omit(this.state.record, 'topics'))
     );
   } 
 
@@ -117,26 +119,40 @@ export default class NovaContaForm extends Component {
     });
   }*/
 
-  handleChangeBanco(event) {
-    this.setState({ banco: event.target.value })
+  handleChange(element) {
+    let record = this.state.record;
+    record[element.target.id] = element.target.value;
+    this.setState({ record: record })
+  }
+
+  /*handleChangeBanco(event) {
+    let record = this.state.record;
+    record.banco = event.target.value;
+    this.setState({ record: record })
   }
 
   handleChangeAgencia(event) {
-    this.setState({ agencia: event.target.value })
+    let record = this.state.record;
+    record.agencia = event.target.value;
+    this.setState({ record: record })
   }
 
   handleChangeConta(event) {
-    this.setState({ conta: event.target.value })
+    let record = this.state.record;
+    record.conta = event.target.value;
+    this.setState({ record: record })
   }
 
   handleChangeDescricao(event) {
-    this.setState({ descricao: event.target.value })
-  }
+    let record = this.state.record;
+    record.descricao = event.target.value;
+    this.setState({ record: record })
+  }*/
 
   BancoValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.banco.length;
-    if (regex.test(this.state.banco)&&(length>3)&&(length<20)){
+    const length = this.state.record.banco.length;
+    if (regex.test(this.state.record.banco)&&(length>3)&&(length<20)){
       return 'success';
     } else {
       return 'error';
@@ -145,8 +161,8 @@ export default class NovaContaForm extends Component {
 
   AgenciaValidationState() {
     var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
-    const length = this.state.agencia.length;
-    if (regex.test(this.state.agencia)&&(length>3)&&(length<20)&&((this.state.agencia)!==(this.state.conta))){
+    const length = this.state.record.agencia.length;
+    if (regex.test(this.state.record.agencia)&&(length>3)&&(length<20)&&((this.state.record.agencia)!==(this.state.record.conta))){
       return 'success';
     } else {
       return 'error';
@@ -155,9 +171,9 @@ export default class NovaContaForm extends Component {
 
   ContaValidationState() {
     var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
-    const length = this.state.conta.length;
-    if (regex.test(this.state.conta)&&(length>3)&&(length<20)){
-      //console.log('Chamou' + this.state.conta);
+    const length = this.state.record.conta.length;
+    if (regex.test(this.state.record.conta)&&(length>3)&&(length<20)){
+      //console.log('Chamou' + this.state.record.conta);
       return 'success';
     } else {
       return 'error';
@@ -166,9 +182,9 @@ export default class NovaContaForm extends Component {
 
   DescricaoValidationState() {
     var regex = /^\s*[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.descricao.length;
-    if (regex.test(this.state.descricao)&&(length<20)){
-      //console.log('valor = ' + (this.state.descricao));
+    const length = this.state.record.descricao.length;
+    if (regex.test(this.state.record.descricao)&&(length<20)){
+      //console.log('valor = ' + (this.state.record.descricao));
       return 'success';
     } else {
       return 'error';
@@ -185,24 +201,24 @@ export default class NovaContaForm extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <FormGroup controlId="Conta" validationState={this.BancoValidationState()}>
+            <FormGroup validationState={this.BancoValidationState()}>
               <ControlLabel>Nome do Banco</ControlLabel>
-              <FormControl ref="Banco" type="text" value={this.state.banco} onChange={this.handleChangeBanco} placeholder="Digite aqui o nome do Banco"/>
+              <FormControl id="banco" type="text" value={this.state.record.banco} onChange={this.handleChange} placeholder="Digite aqui o nome do Banco"/>
               <FormControl.Feedback />
             </FormGroup>
-            <FormGroup controlId="Conta" validationState={this.AgenciaValidationState()}>
+            <FormGroup validationState={this.AgenciaValidationState()}>
               <ControlLabel>Agência</ControlLabel>
-              <FormControl ref="Agencia" type="text" value={this.state.agencia} onChange={this.handleChangeAgencia} placeholder="Numero da Agência"/>
+              <FormControl id="agencia" type="text" value={this.state.record.agencia} onChange={this.handleChange} placeholder="Numero da Agência"/>
               <FormControl.Feedback />
             </FormGroup>
-            <FormGroup controlId="Conta" validationState={this.ContaValidationState()}>
+            <FormGroup validationState={this.ContaValidationState()}>
               <ControlLabel>Conta</ControlLabel>
-              <FormControl ref="Conta" type="text" value={this.state.conta} onChange={this.handleChangeConta} placeholder="Numero da conta com - para separar o digito"/>
+              <FormControl id="conta" type="text" value={this.state.record.conta} onChange={this.handleChange} placeholder="Numero da conta com - para separar o digito"/>
               <FormControl.Feedback />
             </FormGroup>
-            <FormGroup controlId="Conta" validationState={this.DescricaoValidationState()}>
+            <FormGroup validationState={this.DescricaoValidationState()}>
               <ControlLabel>Descrição</ControlLabel>
-              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa conta"/>
+              <FormControl id="descricao" type="text" value={this.state.record.descricao} onChange={this.handleChange} placeholder="Digite aqui uma referencia para essa conta"/>
               <FormControl.Feedback />
             </FormGroup>
           </Modal.Body>

@@ -54,7 +54,7 @@ export default class NovaContaForm extends Component {
             this.setState(
               {
                 topics: assign(
-                          this.state.topics, 
+                          this.state.record.topics, 
                           {
                             [granted[0].topic]: this.handleError,   
                             [granted[1].topic]: this.handleSaveOk
@@ -97,11 +97,11 @@ export default class NovaContaForm extends Component {
   }
 
   handleIncluir() {
-    console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state, null, 2));
+    console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state.record, null, 2));
     // enviar dados para fila
     this.client.publish(
       'financeiro/cadastro/contas/excluir/' + clientId, 
-      JSON.stringify(omit(this.state, 'topics'))
+      JSON.stringify(omit(this.state.record, 'topics'))
     );
   } 
 
@@ -135,9 +135,9 @@ export default class NovaContaForm extends Component {
 
   BancoValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.banco.length;
-    if (regex.test(this.state.banco)&&(length>3)&&(length<20)){
-      return 'success';
+    const length = this.state.record.banco.length;
+    if (regex.test(this.state.record.banco)&&(length>3)&&(length<20)){
+      return 'warning';
     } else {
       return 'error';
     }
@@ -145,9 +145,9 @@ export default class NovaContaForm extends Component {
 
   AgenciaValidationState() {
     var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
-    const length = this.state.agencia.length;
-    if (regex.test(this.state.agencia)&&(length>3)&&(length<20)&&((this.state.agencia)!==(this.state.conta))){
-      return 'success';
+    const length = this.state.record.agencia.length;
+    if (regex.test(this.state.record.agencia)&&(length>3)&&(length<20)&&((this.state.record.agencia)!==(this.state.record.conta))){
+      return 'warning';
     } else {
       return 'error';
     }
@@ -155,10 +155,10 @@ export default class NovaContaForm extends Component {
 
   ContaValidationState() {
     var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
-    const length = this.state.conta.length;
-    if (regex.test(this.state.conta)&&(length>3)&&(length<20)){
-      //console.log('Chamou' + this.state.conta);
-      return 'success';
+    const length = this.state.record.conta.length;
+    if (regex.test(this.state.record.conta)&&(length>3)&&(length<20)){
+      //console.log('Chamou' + this.state.record.conta);
+      return 'warning';
     } else {
       return 'error';
     }
@@ -166,10 +166,10 @@ export default class NovaContaForm extends Component {
 
   DescricaoValidationState() {
     var regex = /^\s*[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.descricao.length;
-    if (regex.test(this.state.descricao)&&(length<20)){
-      //console.log('valor = ' + (this.state.descricao));
-      return 'success';
+    const length = this.state.record.descricao.length;
+    if (regex.test(this.state.record.descricao)&&(length<20)){
+      //console.log('valor = ' + (this.state.record.descricao));
+      return 'warning';
     } else {
       return 'error';
     }
@@ -187,28 +187,28 @@ export default class NovaContaForm extends Component {
           <Modal.Body>
             <FormGroup controlId="Conta" validationState={this.BancoValidationState()}>
               <ControlLabel>Nome do Banco</ControlLabel>
-              <FormControl ref="Banco" type="text" value={this.state.banco} onChange={this.handleChangeBanco} placeholder="Digite aqui o nome do Banco"/>
+              <FormControl ref="Banco" type="text" value={this.state.record.banco} onChange={this.handleChangeBanco} placeholder="Digite aqui o nome do Banco"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.AgenciaValidationState()}>
               <ControlLabel>Agência</ControlLabel>
-              <FormControl ref="Agencia" type="text" value={this.state.agencia} onChange={this.handleChangeAgencia} placeholder="Numero da Agência"/>
+              <FormControl ref="Agencia" type="text" value={this.state.record.agencia} onChange={this.handleChangeAgencia} placeholder="Numero da Agência"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.ContaValidationState()}>
               <ControlLabel>Conta</ControlLabel>
-              <FormControl ref="Conta" type="text" value={this.state.conta} onChange={this.handleChangeConta} placeholder="Numero da conta com - para separar o digito"/>
+              <FormControl ref="Conta" type="text" value={this.state.record.conta} onChange={this.handleChangeConta} placeholder="Numero da conta com - para separar o digito"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.DescricaoValidationState()}>
               <ControlLabel>Descrição</ControlLabel>
-              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa conta"/>
+              <FormControl ref="descricao" type="text" value={this.state.record.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa conta"/>
               <FormControl.Feedback />
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Excluir Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Excluir Conta?</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>

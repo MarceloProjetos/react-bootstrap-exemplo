@@ -173,7 +173,7 @@ export default class LancamentoForm extends Component {
                 clientId={clientId}
                 title="Editar Conta cadastrada"
                 onClose={this.handleClose.bind(this)} 
-                {...this.state.conta}
+                record={this.state.conta}
               >
                   <span>Algo deu errado para achar o form EditarContas</span>
               </EditarContaForm> 
@@ -186,9 +186,9 @@ export default class LancamentoForm extends Component {
             form: 
               <ExcluirContaForm 
                 clientId={clientId}
-                title="Deletar esta Conta?"
+                title="Deletar esta Conta ?"
                 onClose={this.handleClose.bind(this)} 
-                {...this.state.conta} 
+                record={this.state.conta} 
               >
                   <span>Algo deu errado para achar o form ExcluirContas</span>
               </ExcluirContaForm> 
