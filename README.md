@@ -204,6 +204,15 @@ Now you can create an ALIAS on your DNS server for the IP Project.
 | --------      | -----------   |-----------    |
 | example.com   |      A        | 192.168.0.X   |
 
+# Local node development
+
+    C:\Desenvolvimento\git\node-red-nodes\function\random>npm link
+    
+Creat a new link in node-red folder with package.json config name ("name":"node-red-node-random")
+    
+    C:\Users\marcelo.miranda\AppData\Roaming\npm\node_modules\node-red>npm link node-red-node-random
+    
+Restart node-red and find your new node!
 ___
 ##6- PASSWORD in node-red flow
 
