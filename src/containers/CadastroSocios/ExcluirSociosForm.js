@@ -11,9 +11,9 @@ import {
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
-const clientId = 'ExcluirConta_' + (1 + Math.random() * 429495).toString(16);
+const clientId = 'ExcluirSocio_' + (1 + Math.random() * 429495).toString(16);
 
-export default class NovaContaForm extends Component {
+export default class NovaSocioForm extends Component {
   constructor(props) {
     super(props);
 
@@ -32,9 +32,9 @@ export default class NovaContaForm extends Component {
   componentWillMount() {
 
     let opts = {
-      host: '192.168.0.174', //'192.168.0.1', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+      host: this.props.config.host, //'192.168.0.1', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,
@@ -47,8 +47,8 @@ export default class NovaContaForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/erros/'  + clientId, 
-        'financeiro/cadastro/contas/excluido/' + clientId],
+        ['financeiro/cadastro/socios/erros/'  + clientId, 
+        'financeiro/cadastro/socios/excluido/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -100,7 +100,7 @@ export default class NovaContaForm extends Component {
     console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state.record, null, 2));
     // enviar dados para fila
     this.client.publish(
-      'financeiro/cadastro/contas/excluir/' + clientId, 
+      'financeiro/cadastro/socios/excluir/' + clientId, 
       JSON.stringify(omit(this.state.record, 'topics'))
     );
   } 
@@ -125,7 +125,7 @@ export default class NovaContaForm extends Component {
     this.setState({ agencia: event.target.value })
   }
 
-  handleChangeConta(event) {
+  handleChangeSocio(event) {
     this.setState({ conta: event.target.value })
   }
 

@@ -17,9 +17,9 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 //import uuid               from 'node-uuid';
 import { assign}          from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
-import NovaContaForm      from './NovaContaForm';
-import EditarContaForm    from './EditarContaForm';
-import ExcluirContaForm   from './ExcluirContaForm';
+import NovaSociosForm      from './NovaSociosForm';
+import EditarSociosForm    from './EditarSociosForm';
+import ExcluirSociosForm   from './ExcluirSociosForm';
  
 const clientId = 'mqtt_' + (1 + Math.random() * 4294967295).toString(16);
 
@@ -27,14 +27,16 @@ export default class LancamentoForm extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
-      conta: null,
+    this.state = {...this.props, socio: null, socios: [], topics: {}};
 
-      contas: [],
+    /*this.state = { 
+      socio: null,
+
+      socios: [],
 
       // armazena os topicos que estou subscrito
       topics: {}
-    }
+    }*/
 
     this.handleClose    = this.handleClose.bind(this);
     this.handleClick    = this.handleClick.bind(this);
@@ -49,16 +51,16 @@ export default class LancamentoForm extends Component {
 
   carregaLista() {
     // enviar dados para fila
-    this.client.publish('financeiro/cadastro/contas/carregar/',JSON.stringify('Carregar lista '));
+    this.client.publish('financeiro/cadastro/socios/carregar/',JSON.stringify('Carregar lista '));
   }
 
   componentWillMount() {
     console.log('ClientID: ' + clientId);
 
     let opts = {
-      host: '192.168.0.174', //'192.168.0.174', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+      host: this.props.config.host, //'192.168.0.174', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,
@@ -71,11 +73,9 @@ export default class LancamentoForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/erros/'   + clientId, 
-        'financeiro/cadastro/contas/carregado/',
-        //'financeiro/cadastro/contas/incluido/', 
-        //'financeiro/cadastro/contas/alterado/', 
-        'financeiro/cadastro/contas/excluido/'], 
+        ['financeiro/cadastro/socios/erros/'   + clientId, 
+        'financeiro/cadastro/socios/carregado/', 
+        'financeiro/cadastro/socios/excluido/'], 
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -107,7 +107,7 @@ export default class LancamentoForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString()); 
 
     }.bind(this))
-    console.log('ClientID cadastro = ' + clientId );
+    console.log('SocioID cadastro = ' + clientId );
   }
 
   componentWillUnmount() {
@@ -131,7 +131,7 @@ export default class LancamentoForm extends Component {
 
   handleCarregar(msg) {
     //alert('search: ' + msg);
-    this.setState({contas:JSON.parse(msg)});
+    this.setState({socios:JSON.parse(msg)});
   }
 
   handleIncluido(msg) {
@@ -149,19 +149,19 @@ export default class LancamentoForm extends Component {
   handleClick(e) {
     switch(e) {
       case 'Nova':
-        console.log('ClientID nova conta = ' + clientId );
+        console.log('SociosID novo socio = ' + clientId );
         this.setState(
           {
             form: 
-              <NovaContaForm 
+              <NovaSociosForm 
                 clientId={clientId}
-                title="Cadastrar nova Contas"
+                title="Cadastrar novo Socios"
                 onClose={this.handleClose.bind(this)}
-                //onSave={this.handleSave.bind(this)} 
+                config={this.props.config} 
                 //{...this.state.lista[i]}
               >
-                  <span>Algo deu errado para achar o form CadastroContas</span>
-              </NovaContaForm> 
+                  <span>Algo deu errado para achar o form CadastroSocios</span>
+              </NovaSociosForm> 
           }
         )
         break;
@@ -169,14 +169,15 @@ export default class LancamentoForm extends Component {
         this.setState(
           {
             form: 
-              <EditarContaForm 
+              <EditarSociosForm 
                 clientId={clientId}
-                title="Editar Conta cadastrada"
+                title="Editar socio cadastrado"
                 onClose={this.handleClose.bind(this)} 
-                record={this.state.conta}
+                record={this.state.socio}
+                config={this.state.config}
               >
-                  <span>Algo deu errado para achar o form EditarContas</span>
-              </EditarContaForm> 
+                  <span>Algo deu errado para achar o form EditarSocios</span>
+              </EditarSociosForm> 
           }
         )
         break;
@@ -184,14 +185,15 @@ export default class LancamentoForm extends Component {
         this.setState(
           {
             form: 
-              <ExcluirContaForm 
+              <ExcluirSociosForm 
                 clientId={clientId}
-                title="Deletar esta Conta ?"
+                title="Deletar este socio ?"
                 onClose={this.handleClose.bind(this)} 
-                record={this.state.conta} 
+                record={this.state.socio}
+                config={this.state.config} 
               >
-                  <span>Algo deu errado para achar o form ExcluirContas</span>
-              </ExcluirContaForm> 
+                  <span>Algo deu errado para achar o form ExcluirSocio</span>
+              </ExcluirSociosForm> 
           }
         )
         break;
@@ -214,7 +216,7 @@ export default class LancamentoForm extends Component {
   onRowSelect(row, isSelected){
     console.log(row);
     console.log("selected: " + isSelected)
-    this.setState({isSelected: isSelected, conta: row})
+    this.setState({isSelected: isSelected, socio: row})
   }
 
   render() {
@@ -232,14 +234,14 @@ export default class LancamentoForm extends Component {
           <Col md={1} />
           <Col md={10} >
 
-            <Panel header={'Cadastro de Conta Corrente'} bsStyle="primary" >
+            <Panel header={'Cadastro de Socio'} bsStyle="primary" >
 
                 <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
                   <Col xs={6} md={2} >
 
                     <div>
                       <span>  
-                        <h2>Contas</h2>    
+                        <h2>Socios</h2>    
                       </span>
                     </div>
 
@@ -256,7 +258,7 @@ export default class LancamentoForm extends Component {
 
                     <OverlayTrigger 
                       placement="top" 
-                      overlay={(<Tooltip id="tooltip">Editar conta</Tooltip>)}
+                      overlay={(<Tooltip id="tooltip">Editar Socio</Tooltip>)}
                     >
 
                         <Button
@@ -276,7 +278,7 @@ export default class LancamentoForm extends Component {
 
                     <OverlayTrigger 
                       placement="top" 
-                      overlay={(<Tooltip id="tooltip">Excluir esta Conta</Tooltip>)}
+                      overlay={(<Tooltip id="tooltip">Excluir esta Socio</Tooltip>)}
                     >
                         <Button
                           bsSize="large"
@@ -301,7 +303,7 @@ export default class LancamentoForm extends Component {
 
                     <OverlayTrigger 
                       placement="top" 
-                      overlay={(<Tooltip id="tooltip">Cadastrar nova Contas</Tooltip>)}
+                      overlay={(<Tooltip id="tooltip">Cadastrar nova Socio</Tooltip>)}
                     >
                         <Button
                           bsSize="large"
@@ -319,7 +321,7 @@ export default class LancamentoForm extends Component {
                   <Col xs={12} md={12}>
                     <div><span> <br/> </span></div>
                         <BootstrapTable
-                          data={this.state.contas}
+                          data={this.state.socios}
                           remote={ true }
                           striped={true}
                           hover={true}
@@ -328,9 +330,7 @@ export default class LancamentoForm extends Component {
                           selectRow={selectRowProp}
                           search={true}>
                           <TableHeaderColumn dataField="_id" isKey={true} dataAlign="center" hidden={true}>Product ID</TableHeaderColumn>
-                          <TableHeaderColumn dataField="banco"                               dataSort={true}>BANCO</TableHeaderColumn>
-                          <TableHeaderColumn dataField="agencia"          dataAlign="center">CONTA</TableHeaderColumn>
-                          <TableHeaderColumn dataField="conta"            dataAlign="center">AGÊNCIA</TableHeaderColumn>
+                          <TableHeaderColumn dataField="socio"                               dataSort={true}>SOCIO</TableHeaderColumn>
                           <TableHeaderColumn dataField="descricao"        dataAlign="center">DESCRIÇÃO</TableHeaderColumn>
                         </BootstrapTable>
                   </Col>

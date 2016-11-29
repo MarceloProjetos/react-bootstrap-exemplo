@@ -53,12 +53,12 @@ export default class LancamentoForm extends Component {
   }
 
   componentWillMount() {
-    console.log('ClientID: ' + clientId);
+    console.log('Config: ' + JSON.stringify(this.props.config,null,2));
 
     let opts = {
-      host: '192.168.0.174', //'192.168.0.174', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+      host: this.props.config.host, //'192.168.0.174', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,
@@ -157,7 +157,7 @@ export default class LancamentoForm extends Component {
                 clientId={clientId}
                 title="Cadastrar nova Contas"
                 onClose={this.handleClose.bind(this)}
-                //onSave={this.handleSave.bind(this)} 
+                config={this.props.config} 
                 //{...this.state.lista[i]}
               >
                   <span>Algo deu errado para achar o form CadastroContas</span>
@@ -174,6 +174,7 @@ export default class LancamentoForm extends Component {
                 title="Editar Conta cadastrada"
                 onClose={this.handleClose.bind(this)} 
                 record={this.state.conta}
+                config={this.props.config} 
               >
                   <span>Algo deu errado para achar o form EditarContas</span>
               </EditarContaForm> 
@@ -189,6 +190,7 @@ export default class LancamentoForm extends Component {
                 title="Deletar esta Conta ?"
                 onClose={this.handleClose.bind(this)} 
                 record={this.state.conta} 
+                config={this.props.config} 
               >
                   <span>Algo deu errado para achar o form ExcluirContas</span>
               </ExcluirContaForm> 

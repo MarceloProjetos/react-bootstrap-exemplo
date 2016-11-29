@@ -34,9 +34,9 @@ export default class NovaContaForm extends Component {
   componentWillMount() {
 
     let opts = {
-      host: '192.168.0.174', //'192.168.0.1', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+      host: this.props.config.host, //'192.168.0.1', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,

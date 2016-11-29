@@ -12,27 +12,23 @@ import uuid               from 'node-uuid';
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
-const clientId = 'AdcionarConta_' + (1 + Math.random() * 4294967295).toString(16);
+const clientId = 'AdcionarSocios_' + (1 + Math.random() * 4294967295).toString(16);
 
-export default class NovaContaForm extends Component {
+export default class NovaSociosForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       _id:    uuid.v4(),
       selecionada: false,
-      banco:  'ALTAMIRA',
-      conta:  '9634',
-      agencia: '',
+      socio:  'CELSO MIRANDA',
       descricao: '',
 
       // armazena os topicos que estou subscrito
       topics: {}
     }
 
-    this.handleChangeBanco      = this.handleChangeBanco.bind(this);
-    this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
-    this.handleChangeConta      = this.handleChangeConta.bind(this);
+    this.handleChangeSocio      = this.handleChangeSocio.bind(this);
     this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);
 
     this.handleError            = this.handleError.bind(this);
@@ -42,9 +38,9 @@ export default class NovaContaForm extends Component {
 
   componentWillMount() {
     let opts = {
-      host: '192.168.0.174', //'192.168.0.1', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+      host: this.props.config.host, //'192.168.0.1', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,
@@ -57,7 +53,7 @@ export default class NovaContaForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/incluido/' + clientId],
+        ['financeiro/cadastro/socios/incluido/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -84,8 +80,8 @@ export default class NovaContaForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
     }.bind(this))
-    console.log('ClientID criado em nova conta = ' + clientId + '\n');
-    console.log('this.props.clientId  recebido em nova conta = ' + this.props.clientId + '\n');
+    console.log('ClientID criado em novo socio = ' + clientId + '\n');
+    console.log('this.props.clientId  recebido em novo socio = ' + this.props.clientId + '\n');
   }
 
   componentWillUnmount() {
@@ -106,7 +102,7 @@ export default class NovaContaForm extends Component {
   handleIncluir() {
     // enviar dados para fila
     this.client.publish(
-            'financeiro/cadastro/contas/incluir/' + clientId, 
+            'financeiro/cadastro/socios/incluir/' + clientId, 
             JSON.stringify(omit(this.state, 'topics'))
           );
   } 
@@ -123,47 +119,18 @@ export default class NovaContaForm extends Component {
     });
   }*/
 
-  handleChangeBanco(event) {
-    this.setState({ banco: event.target.value })
-  }
-
-  handleChangeAgencia(event) {
-    this.setState({ agencia: event.target.value })
-  }
-
-  handleChangeConta(event) {
-    this.setState({ conta: event.target.value })
+  handleChangeSocio (event) {
+    this.setState({ socio: event.target.value })
   }
 
   handleChangeDescricao(event) {
     this.setState({ descricao: event.target.value })
   }
 
-  BancoValidationState() {
+  SocioValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.banco.length;
-    if (regex.test(this.state.banco)&&(length>3)&&(length<20)){
-      return 'success';
-    } else {
-      return 'error';
-    }
-  }
-
-  AgenciaValidationState() {
-    var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
-    const length = this.state.agencia.length;
-    if (regex.test(this.state.agencia)&&(length>3)&&(length<20)&&((this.state.agencia)!==(this.state.conta))){
-      return 'success';
-    } else {
-      return 'error';
-    }
-  }
-
-  ContaValidationState() {
-    var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
-    const length = this.state.conta.length;
-    if (regex.test(this.state.conta)&&(length>3)&&(length<20)){
-      //console.log('Chamou' + this.state.conta);
+    const length = this.state.socio.length;
+    if (regex.test(this.state.socio)&&(length>3)&&(length<20)){
       return 'success';
     } else {
       return 'error';
@@ -191,30 +158,20 @@ export default class NovaContaForm extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <FormGroup controlId="Conta" validationState={this.BancoValidationState()}>
-              <ControlLabel>Nome do Banco</ControlLabel>
-              <FormControl ref="Banco" type="text" value={this.state.banco} onChange={this.handleChangeBanco} placeholder="Digite aqui o nome do Banco"/>
-              <FormControl.Feedback />
-            </FormGroup>
-            <FormGroup controlId="Conta" validationState={this.AgenciaValidationState()}>
-              <ControlLabel>Agência</ControlLabel>
-              <FormControl ref="Agencia" type="text" value={this.state.agencia} onChange={this.handleChangeAgencia} placeholder="Numero da Agência"/>
-              <FormControl.Feedback />
-            </FormGroup>
-            <FormGroup controlId="Conta" validationState={this.ContaValidationState()}>
-              <ControlLabel>Conta</ControlLabel>
-              <FormControl ref="Conta" type="text" value={this.state.conta} onChange={this.handleChangeConta} placeholder="Numero da conta com - para separar o digito"/>
+            <FormGroup controlId="Conta" validationState={this.SocioValidationState()}>
+              <ControlLabel>Nome do Sócio</ControlLabel>
+              <FormControl ref="Banco" type="text" value={this.state.socio} onChange={this.handleChangeSocio} placeholder="Digite aqui o nome do Sócio"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="Conta" validationState={this.DescricaoValidationState()}>
               <ControlLabel>Descrição</ControlLabel>
-              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa conta"/>
+              <FormControl ref="descricao" type="text" value={this.state.descricao} onChange={this.handleChangeDescricao} placeholder="Digite aqui uma referencia para essa Sócio"/>
               <FormControl.Feedback />
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Adicionar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.SocioValidationState() === 'error') }>Adicionar Conta</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>

@@ -16,7 +16,7 @@ import {
 } from 'react-bootstrap';
 //Menu cadastro
 import CadastroContas     from './containers/CadastroContas/CadastroContasForm';
-import CadastroSocios     from './containers/cadastroSociosForm';
+import CadastroSocios     from './containers/CadastroSocios/CadastroSociosForm';
 //Menu Lançamento
 import MovimentoInclusao  from './containers/lancamentoInclusaoForm';
 import MovimentoSocios    from './containers/lancamentoSociosForm';
@@ -34,7 +34,13 @@ export default class App extends Component {
 
     this.state = {
       clientId: 'Financeiro_' + (1 + Math.random() * 4294967295).toString(16),
-      form: null
+      form: null,
+      config: {
+        host: '192.168.0.174',
+        port: 61614,
+        protocol: 'ws'
+      }
+
     }
 
     this.handleClick = this.handleClick.bind(this);
@@ -48,20 +54,6 @@ export default class App extends Component {
   handleClick(e) {
     //alert(JSON.stringify(e))
     switch(e) {
-      case 'Contas':
-        this.setState(
-          {
-            form: 
-              <CadastroContas 
-                clientId={this.state.clientId}
-                nome="Cadastro de Contas"
-                onClose={this.handleClose.bind(this)} 
-              >
-                <span>Algo deu errado para achar o form CadastroContas</span>  
-              </CadastroContas> 
-          }
-        )
-        break;
       case 'Socios':
         this.setState(
           {
@@ -69,10 +61,26 @@ export default class App extends Component {
               <CadastroSocios 
                 clientId={this.state.clientId}
                 nome="Cadastro de Socios"
-                onClose={this.handleClose.bind(this)} 
+                onClose={this.handleClose.bind(this)}
+                config={this.state.config} 
               >
                   <span>Algo deu errado para achar o form CadastroSocios</span>
               </CadastroSocios> 
+          }
+        )
+        break;
+      case 'Contas':
+        this.setState(
+          {
+            form: 
+              <CadastroContas 
+                clientId={this.state.clientId}
+                nome="Cadastro de Contas"
+                onClose={this.handleClose.bind(this)}
+                config={this.state.config}
+              >
+                <span>Algo deu errado para achar o form CadastroContas</span>  
+              </CadastroContas> 
           }
         )
         break;
