@@ -21,7 +21,7 @@ export default class NovaSociosForm extends Component {
     this.state = {
       _id:    uuid.v4(),
       selecionada: false,
-      socio:  'CELSO MIRANDA',
+      socio:  '',
       descricao: '',
 
       // armazena os topicos que estou subscrito

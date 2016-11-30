@@ -11,9 +11,9 @@ import {
 import { assign, omit }   from 'lodash';
 import mqtt               from 'mqtt/lib/connect';
 
-const clientId = 'EditarConta_' + (1 + Math.random() * 4294967295).toString(16);
+const clientId = 'EditarSocio_' + (1 + Math.random() * 4294967295).toString(16);
 
-export default class NovaContaForm extends Component {
+export default class EditarSociosForm extends Component {
   constructor(props) {
     super(props);
 
@@ -49,8 +49,8 @@ export default class NovaContaForm extends Component {
     this.client.on('connect', function() {
 
       this.client.subscribe(
-        ['financeiro/cadastro/contas/erros/'  + clientId, 
-        'financeiro/cadastro/contas/alterado/' + clientId],
+        ['financeiro/cadastro/socios/erros/'  + clientId, 
+        'financeiro/cadastro/socios/alterado/' + clientId],
          function(err, granted) { 
           !err ? 
             this.setState(
@@ -102,7 +102,7 @@ export default class NovaContaForm extends Component {
     console.log('ClientID: ' + clientId + '\nEnviado: \n' + JSON.stringify(this.state.record, null, 2));
     // enviar dados para fila
     this.client.publish(
-      'financeiro/cadastro/contas/alterar/' + clientId, 
+      'financeiro/cadastro/socios/alterar/' + clientId, 
       JSON.stringify(omit(this.state.record, 'topics'))
     );
   } 
@@ -149,31 +149,10 @@ export default class NovaContaForm extends Component {
     this.setState({ record: record })
   }*/
 
-  BancoValidationState() {
+  SocioValidationState() {
     var regex = /^\s*[A-Za-z]+(?:\s+[A-Za-z0-9]+)*\s*$/;
-    const length = this.state.record.banco.length;
-    if (regex.test(this.state.record.banco)&&(length>3)&&(length<20)){
-      return 'success';
-    } else {
-      return 'error';
-    }
-  }
-
-  AgenciaValidationState() {
-    var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
-    const length = this.state.record.agencia.length;
-    if (regex.test(this.state.record.agencia)&&(length>3)&&(length<20)&&((this.state.record.agencia)!==(this.state.record.conta))){
-      return 'success';
-    } else {
-      return 'error';
-    }
-  }
-
-  ContaValidationState() {
-    var regex = /^\$?[0-9]+((\-[A-Z0-9][A-Z0-9])|(\-[A-Z0-9]))?$/;
-    const length = this.state.record.conta.length;
-    if (regex.test(this.state.record.conta)&&(length>3)&&(length<20)){
-      //console.log('Chamou' + this.state.record.conta);
+    const length = this.state.record.socio.length;
+    if (regex.test(this.state.record.socio)&&(length>3)&&(length<20)){
       return 'success';
     } else {
       return 'error';
@@ -201,30 +180,20 @@ export default class NovaContaForm extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <FormGroup validationState={this.BancoValidationState()}>
-              <ControlLabel>Nome do Banco</ControlLabel>
-              <FormControl id="banco" type="text" value={this.state.record.banco} onChange={this.handleChange} placeholder="Digite aqui o nome do Banco"/>
-              <FormControl.Feedback />
-            </FormGroup>
-            <FormGroup validationState={this.AgenciaValidationState()}>
-              <ControlLabel>Agência</ControlLabel>
-              <FormControl id="agencia" type="text" value={this.state.record.agencia} onChange={this.handleChange} placeholder="Numero da Agência"/>
-              <FormControl.Feedback />
-            </FormGroup>
-            <FormGroup validationState={this.ContaValidationState()}>
-              <ControlLabel>Conta</ControlLabel>
-              <FormControl id="conta" type="text" value={this.state.record.conta} onChange={this.handleChange} placeholder="Numero da conta com - para separar o digito"/>
+            <FormGroup validationState={this.SocioValidationState()}>
+              <ControlLabel>Nome do Socio</ControlLabel>
+              <FormControl id="socio" type="text" value={this.state.record.socio} onChange={this.handleChange} placeholder="Digite aqui o nome do Sócio"/>
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup validationState={this.DescricaoValidationState()}>
               <ControlLabel>Descrição</ControlLabel>
-              <FormControl id="descricao" type="text" value={this.state.record.descricao} onChange={this.handleChange} placeholder="Digite aqui uma referencia para essa conta"/>
+              <FormControl id="descricao" type="text" value={this.state.record.descricao} onChange={this.handleChange} placeholder="Digite aqui uma referencia para esse socio"/>
               <FormControl.Feedback />
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onClose} >Fechar</Button>
-            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.BancoValidationState() === 'error') || (this.ContaValidationState() === 'error') || (this.AgenciaValidationState() === 'error')}>Modificar Conta</Button>
+            <Button bsStyle="primary" onClick={this.handleIncluir} disabled={(this.SocioValidationState() === 'error') }>Modificar Sócio</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
