@@ -33,7 +33,7 @@ export default class LancamentoForm extends Component {
       entrega: new Date().toISOString(),
       cnpj: '63.394.915/0001-62',
       representante: '001',
-      nome: 'ALEGRIA NA VIDA AGROINDUSTRIAL LTDA',
+      nome: 'ALEGRI NA VIDA AGROINDUSTRIAL LTDA',
       parcelas: [
         {
           selecionada: false,
@@ -196,6 +196,16 @@ export default class LancamentoForm extends Component {
     });
   }
 
+/*
+    <FormGroup controlId="formControlsSelect">
+      <ControlLabel>Select</ControlLabel>
+      <FormControl componentClass="select" placeholder="select">
+        <option value="select">select</option>
+        <option value="other">...</option>
+      </FormControl>
+    </FormGroup>
+*/
+
   render() {
     //const canSave = true;
 
@@ -206,10 +216,7 @@ export default class LancamentoForm extends Component {
           <Col md={1} />
           <Col md={10} >
 
-            <h4>ClientId: {this.props.clientId}</h4>
-
-            <Panel header={'Lançamentos Inclusão'} bsStyle="primary" >
-
+            <Panel header={'Lançamentos Inclusão 4'} bsStyle="primary" >
 
                 <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
                   <Col xs={6} md={2} >
@@ -235,7 +242,6 @@ export default class LancamentoForm extends Component {
                       placement="top" 
                       overlay={(<Tooltip id="tooltip">Salvar as Alterações</Tooltip>)}
                     >
-
                         <Button
                           bsSize="large"
                           onClick={this.handleSave}
@@ -254,7 +260,6 @@ export default class LancamentoForm extends Component {
                       placement="top" 
                       overlay={(<Tooltip id="tooltip">Imprimir</Tooltip>)}
                     >
-
                         <Button
                           bsSize="large"
                           disabled={!this.state.id}
@@ -274,7 +279,6 @@ export default class LancamentoForm extends Component {
                       placement="top" 
                       overlay={(<Tooltip id="tooltip">Calcular Datas das Parcelas</Tooltip>)}
                     >
-
                         <Button
                           bsSize="large"
                           onClick={this.handleCalc}
@@ -285,7 +289,6 @@ export default class LancamentoForm extends Component {
                         </Button>
 
                     </OverlayTrigger>
-
                   </Col>
                   <Col xs={6} md={2} >
 
@@ -304,7 +307,6 @@ export default class LancamentoForm extends Component {
                         </Button>
 
                     </OverlayTrigger>
-
                   </Col>
                   <Col xs={6} md={2} >
 

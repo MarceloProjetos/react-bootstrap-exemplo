@@ -18,9 +18,9 @@ import {
 import CadastroContas     from './containers/CadastroContas/CadastroContasForm';
 import CadastroSocios     from './containers/CadastroSocios/CadastroSociosForm';
 //Menu Lançamento
-import MovimentoInclusao  from './containers/lancamentoInclusaoForm';
-import MovimentoSocios    from './containers/lancamentoSociosForm';
-import AtualizaMovimentos from './containers/lancamentoAtualizaForm';
+import MovimentoInclusao  from './containers/Lancamentos/lancamentoInclusaoForm';
+import MovimentoSocios    from './containers/Lancamentos/lancamentoSociosForm';
+import AtualizaMovimentos from './containers/Lancamentos/lancamentoAtualizaForm';
 //Menu Consultas
 import PrevisaoDiaria     from './containers/consultaPrevisaoDiariaForm';
 import PrevisaoMensal     from './containers/consultaPrevisaoMensalForm';
@@ -90,7 +90,7 @@ export default class App extends Component {
             form: 
               <MovimentoInclusao
                 clientId={this.state.clientId}
-                nome="Cadastro de Contas"
+                nome="Inclusão de Movimento"
                 onClose={this.handleClose.bind(this)} 
               >
                   <span>Algo deu errado para achar o form MovimentoInclusao</span>
