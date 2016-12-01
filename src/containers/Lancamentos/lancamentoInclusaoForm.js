@@ -11,9 +11,10 @@ import {
   Grid,
   FormGroup,
   FormControl,
+  ControlLabel,
   Table,
   Checkbox,
-  Tooltip,
+  Tooltip
 } from 'react-bootstrap';
 import DatePicker from 'react-bootstrap-date-picker';
 
@@ -174,19 +175,19 @@ export default class LancamentoForm extends Component {
   }
 
   handleDelete(id) {
-
+    //alert('delete: ' + msg);
   }
 
   handlePrint(data) {
-
+    //alert('print: ' + msg);
   }
 
   handleCalc(data) {
-
+    //alert('calcular: ' + msg);
   }
 
   handleSearch(data) {
-
+    alert('search: ' + data);
   }
 
   handleChange(value) {
@@ -197,13 +198,7 @@ export default class LancamentoForm extends Component {
   }
 
 /*
-    <FormGroup controlId="formControlsSelect">
-      <ControlLabel>Select</ControlLabel>
-      <FormControl componentClass="select" placeholder="select">
-        <option value="select">select</option>
-        <option value="other">...</option>
-      </FormControl>
-    </FormGroup>
+http://127.0.0.1:3000/
 */
 
   render() {
@@ -216,9 +211,9 @@ export default class LancamentoForm extends Component {
           <Col md={1} />
           <Col md={10} >
 
-            <Panel header={'Lançamentos Inclusão 4'} bsStyle="primary" >
+            <Panel header={'Lançamentos em Conta "INCLUSÃO"'} bsStyle="primary" >
 
-                <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
+                {/*<Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
                   <Col xs={6} md={2} >
 
                     <OverlayTrigger 
@@ -327,8 +322,44 @@ export default class LancamentoForm extends Component {
                     </OverlayTrigger>
 
                   </Col>
+                </Row>*/}
+
+                <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
+                  <Col md={6} >
+                      <FormGroup controlId="formControlsSelect">
+                        <ControlLabel>Seleciona a conta</ControlLabel>
+                        <FormControl componentClass="select" placeholder="Bancos + Contas">
+                          <option value="select">BRADESCO CC-04050-7</option>
+                          <option value="select">ITAU CC-9672</option>
+                          <option value="select">BANCO DO BRASIL CC-9672</option>
+
+                        </FormControl>
+                      </FormGroup>
+                  </Col>
+                  <Col md={6} >
+                      <FormGroup>
+                          <ControlLabel>Saldo Atual</ControlLabel>
+                          <FormControl disabled type="text" placeholder="R$124.888,77" />
+                      </FormGroup>
+                  </Col>
                 </Row>
 
+                <Row style={{paddingTop: 20}} >
+                  <Col xs={12} md={12}> Movimento</Col>
+                </Row>
+                <Row style={{paddingTop: 20}} >
+                  <Col xs={12} md={12}> DATA</Col>
+                </Row>
+                <Row style={{paddingTop: 20}} >
+                  <Col xs={12} md={12}> 
+                    <FormGroup controlId="emissao" validationState="success">
+                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
+                      {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
+                      {/*<FormControl.Feedback />*/}
+                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleChange} />
+                    </FormGroup>
+                  </Col>
+                </Row>
                 <Row style={{paddingTop: 20}} >
                   <Col xs={12} md={2}>Número</Col>
                   <Col xs={12} md={2}>

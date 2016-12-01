@@ -130,7 +130,6 @@ export default class LancamentoForm extends Component {
   }
 
   handleCarregar(msg) {
-    //alert('search: ' + msg);
     this.setState({contas:JSON.parse(msg)});
   }
 

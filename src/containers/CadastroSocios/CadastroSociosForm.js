@@ -311,7 +311,7 @@ export default class LancamentoForm extends Component {
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="plus" />
-                          <div><span>Nova</span></div>
+                          <div><span>Novo</span></div>
                         </Button>
                     </OverlayTrigger>
 
