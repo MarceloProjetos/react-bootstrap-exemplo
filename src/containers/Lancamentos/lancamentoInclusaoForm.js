@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 
 import { 
-  OverlayTrigger, 
   Button, 
   Glyphicon, 
   Panel, 
@@ -12,9 +11,8 @@ import {
   FormGroup,
   FormControl,
   ControlLabel,
-  Table,
   Checkbox,
-  Tooltip
+  Radio
 } from 'react-bootstrap';
 import DatePicker from 'react-bootstrap-date-picker';
 
@@ -35,6 +33,7 @@ export default class LancamentoForm extends Component {
       cnpj: '63.394.915/0001-62',
       representante: '001',
       nome: 'ALEGRI NA VIDA AGROINDUSTRIAL LTDA',
+      liquidado: false,
       parcelas: [
         {
           selecionada: false,
@@ -62,6 +61,9 @@ export default class LancamentoForm extends Component {
 
     this.handleError = this.handleError.bind(this);
     this.handleSaveOk = this.handleSaveOk.bind(this);
+
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+    this.console_log = this.console_log.bind(this);
 
   }
 
@@ -135,6 +137,17 @@ export default class LancamentoForm extends Component {
       // Completed of async action, set loading state back
       this.setState({isLoading: false});
     }, 2000);
+  }
+
+  console_log(msg) {
+    console.log('Modou:' + this.state.liquidado)
+  }
+
+  handleCheckboxChange(value) {
+    console.log('Antes: ' + this.state.liquidado)
+    this.setState({liquidado: !this.state.liquidado}, 
+      this.console_log)
+    console.log('Depois: ' + this.state.liquidado)
   }
 
   handleInsert() {
@@ -345,13 +358,8 @@ http://127.0.0.1:3000/
                 </Row>
 
                 <Row style={{paddingTop: 20}} >
-                  <Col xs={12} md={12}> Movimento</Col>
-                </Row>
-                <Row style={{paddingTop: 20}} >
-                  <Col xs={12} md={12}> DATA</Col>
-                </Row>
-                <Row style={{paddingTop: 20}} >
-                  <Col xs={12} md={12}> 
+                  <Col xs={12} md={1}> DATA</Col>
+                  <Col xs={12} md={3}> 
                     <FormGroup controlId="emissao" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
@@ -360,98 +368,71 @@ http://127.0.0.1:3000/
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row style={{paddingTop: 20}} >
-                  <Col xs={12} md={2}>Número</Col>
-                  <Col xs={12} md={2}>
+                <Row>
+                  <Col xs={12} md={1}>Cheque</Col>
+                  <Col xs={12} md={3}>
                     <FormGroup controlId="numero" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       <FormControl ref="numero" type="text" value={this.state.numero} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
-                  <Col xs={12} md={2}>Emissão</Col>
                   <Col xs={12} md={2}>
                     <FormGroup controlId="emissao" validationState="success">
-                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
-                      {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleChange} />
-                    </FormGroup>
-                  </Col>
-                  <Col xs={12} md={2}>Entrega</Col>
-                  <Col xs={12} md={2}>
-                    <FormGroup controlId="entrega" validationState="success">
-                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
-                      {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="entrega" value={this.state.entrega} onChange={this.handleChange} />
+                      <Checkbox validationState="success" id="liquidado" defaultChecked={this.state.liquidado} onChange={this.handleCheckboxChange} >
+                        Liquidado ?
+                      </Checkbox>     
                     </FormGroup>
                   </Col>
                 </Row>
-
                 <Row>
-                  <Col xs={12} md={2}>Pedido</Col>
-                  <Col xs={12} md={2}>
+                  <Col xs={12} md={1}>Valor</Col>
+                  <Col xs={12} md={3}>
                     <FormGroup controlId="pedido" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       <FormControl type="text" ref="pedido" value={this.state.pedido} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
-                  <Col xs={12} md={1}>CNPJ/CPF</Col>
+                  <Col xs={12} md={1}>Operação</Col>
                   <Col xs={12} md={3}>
-                    <FormGroup controlId="cnpj" validationState="success">
-                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" ref="cnpj" value={this.state.cnpj} onChange={this.handleChange} />
-                      <FormControl.Feedback />
+                    <FormGroup>
+                      <Radio inline>
+                        1
+                      </Radio>
+                      {' '}
+                      <Radio inline>
+                        2
+                      </Radio>
+                      {' '}
                     </FormGroup>
                   </Col>
-                  <Col xs={12} md={2}>Representante</Col>
-                  <Col xs={12} md={2}>
-                    <FormGroup controlId="representante" validationState="success">
-                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" ref="representante" value={this.state.representante} onChange={this.handleChange} />
-                      <FormControl.Feedback />
-                    </FormGroup>
+                  <Col xs={12} md={2} mdOffset={2}>
+                        <Button
+                          bsStyle="danger"
+                          onClick={this.handleClick.bind(this, 'Editar')}
+                        >
+                          <div><Glyphicon glyph="remove" /><span>    Cancelar</span></div>
+                        </Button>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col xs={12} md={2}>Razão Social</Col>
-                  <Col xs={12} md={10}>
+                  <Col xs={12} md={1}>Observação </Col>
+                  <Col xs={12} md={7}>
                     <FormGroup controlId="nome" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       <FormControl type="text" ref="nome" value={this.state.nome} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
-                </Row>
-
-                <Row>
-                  <Col xs={12} md={12}>
-                    <Table striped bordered condensed hover>
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Data</th>
-                          <th>Valor da lancamento</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {this.state.parcelas.map( (k, i) => 
-                          <tr key={'tr-' + i} >
-                            <td><Checkbox value={k.selecionada} /></td>
-                            <td>{k.vencto}</td>
-                            <td>{k.valor}</td>
-                          </tr>
-                        )}
- 
-                        <tr>
-                          <td></td>
-                          <td colSpan="2">Total das Parcelas: R$ 666,96</td>
-                        </tr>
-                      </tbody>
-                    </Table>
+                  <Col xs={12} md={2} mdOffset={2}>
+                        <Button
+                          bsStyle="success"
+                          onClick={this.handleClick.bind(this, 'Editar')}
+                        >
+                          <div><Glyphicon glyph="ok" /><span>  Confirmar</span></div>
+                        </Button>
                   </Col>
                 </Row>
            
