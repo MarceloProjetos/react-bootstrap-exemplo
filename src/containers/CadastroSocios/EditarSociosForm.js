@@ -21,11 +21,6 @@ export default class EditarSociosForm extends Component {
 
     this.handleChange = this.handleChange.bind(this);
 
-    /*this.handleChangeBanco      = this.handleChangeBanco.bind(this);
-    this.handleChangeAgencia    = this.handleChangeAgencia.bind(this);
-    this.handleChangeConta      = this.handleChangeConta.bind(this);
-    this.handleChangeDescricao  = this.handleChangeDescricao.bind(this);*/
-
     this.handleError            = this.handleError.bind(this);
     this.handleIncluir          = this.handleIncluir.bind(this);
     this.handleSaveOk           = this.handleSaveOk.bind(this);
