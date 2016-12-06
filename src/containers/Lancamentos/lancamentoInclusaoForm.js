@@ -20,6 +20,8 @@ import uuid from 'node-uuid';
 import { assign, omit } from 'lodash';
 import mqtt from 'mqtt/lib/connect';
 
+const clientId = 'lancamento_' + (1 + Math.random() * 4294967295).toString(16);
+
 export default class LancamentoForm extends Component {
   constructor(props) {
     super(props);
@@ -46,62 +48,83 @@ export default class LancamentoForm extends Component {
           valor: 3572.96
         }        
       ],
+
+      // campos de controle, nao apagar, nao gravar
+      conta: 0, // conta selecionada
+      
+      contas: [],  // lista de contas
+      
       topics: {}
     }
 
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
-
-    this.handleInsert = this.handleInsert.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handlePrint = this.handlePrint.bind(this);
-    this.handleCalc = this.handleCalc.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
+    this.handleIncluido = this.handleIncluido.bind(this);
 
     this.handleError = this.handleError.bind(this);
+    this.handleSave = this.handleSave.bind(this);
     this.handleSaveOk = this.handleSaveOk.bind(this);
 
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.console_log = this.console_log.bind(this);
 
+    this.handleContaChange = this.handleContaChange.bind(this);
+
+    this.mostraContaSelecionada = this.mostraContaSelecionada.bind(this);
   }
 
+  handleContaChange(element) {
+    this.setState({conta: element.target.value}, this.mostraContaSelecionada);
+  }
+
+  mostraContaSelecionada() {
+    console.log('Conta selecionada: ' + this.state.conta);
+  }
+  carregaLista() {
+    // enviar dados para fila
+    this.client.publish('financeiro/lancamento/contas/carregar/',JSON.stringify('Carregar contas '));
+  }
+
+
   componentWillMount() {
-    const opts = {
-      host: 'localhost', //'192.168.0.1', //'test.mosquitto.org'
-      port: 61614,
-      protocol: 'ws',
+    console.log('Config: ' + JSON.stringify(this.props.config,null,2));
+
+    let opts = {
+      host: this.props.config.host, //'192.168.0.174', //'test.mosquitto.org'
+      port: this.props.config.port,
+      protocol: this.props.config.protocol,
       qos: 0,
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: this.props.clientId
+      clientId: clientId
     }
 
     this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      //let topics = {};
 
       this.client.subscribe(
-        'financeiro/lancamento/erros/' + opts.clientId, 
-        function(err, granted) { 
+        ['financeiro/lancamento/contas/erros/'   + clientId, 
+        'financeiro/lancamento/contas/carregado/'], 
+         function(err, granted) { 
           !err ? 
-            this.setState({
-              topics: assign(this.state.topics, {[granted[0].topic]: this.handleError})}) : 
-            console.log('Erro ao se inscrever no topico: ' + err)
+            this.setState(
+              {
+                topics: assign(
+                          this.state.topics, 
+                          {
+                            [granted[0].topic]: this.handleError,   
+                            [granted[1].topic]: this.handleIncluido
+                          }
+                        )
+              },
+              this.carregaLista
+            ) 
+          : 
+            alert('Erro ao se inscrever no topico: ' + err);
         }.bind(this)
-      );
-
-      //this.client.subscribe('financeiro/lancamento/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/lancamento/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-
+      );  
     }.bind(this));
     
     this.client.on('message', function (topic, message) {
@@ -111,14 +134,14 @@ export default class LancamentoForm extends Component {
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
     }.bind(this))
-
+    console.log('ClientID lancamento = ' + clientId );
   }
 
   componentWillUnmount() {
-    this.state.topics && Object.keys(this.state.topics).forEach( (key) =>
-      this.client.unsubscribe(this.state.topics[key].topic, function(err) 
+    this.state.topics && Object.keys(this.state.topics).forEach( (topic) =>
+      this.client.unsubscribe(topic, function(err) 
         { 
-          err && console.log('Erro ao retirar a inscrição ao topico: ' + this.state.topics[key].topic)
+          err && console.log('Erro ao retirar a inscrição ao topico: ' + topic)
         }
       )
     )
@@ -191,8 +214,10 @@ export default class LancamentoForm extends Component {
     //alert('delete: ' + msg);
   }
 
-  handlePrint(data) {
-    //alert('print: ' + msg);
+  handleIncluido(msg) {
+    let contas = JSON.parse(msg);
+    this.setState({contas: contas, conta: Array.isArray(contas) && contas.length ? msg[0]._id : 0});
+    alert('incluido: ' + msg);
   }
 
   handleCalc(data) {
@@ -341,11 +366,10 @@ http://127.0.0.1:3000/
                   <Col md={6} >
                       <FormGroup controlId="formControlsSelect">
                         <ControlLabel>Seleciona a conta</ControlLabel>
-                        <FormControl componentClass="select" placeholder="Bancos + Contas">
-                          <option value="select">BRADESCO CC-04050-7</option>
-                          <option value="select">ITAU CC-9672</option>
-                          <option value="select">BANCO DO BRASIL CC-9672</option>
-
+                        <FormControl componentClass="select" placeholder="Bancos + Contas" value={this.state.conta} onChange={this.handleContaChange} >
+                        {this.state.contas.map( (c) =>
+                          <option key={c._id} value={c._id}>{c.banco + ' ' + c.conta}</option>
+                        )}
                         </FormControl>
                       </FormGroup>
                   </Col>
@@ -360,26 +384,26 @@ http://127.0.0.1:3000/
                 <Row style={{paddingTop: 20}} >
                   <Col xs={12} md={1}> DATA</Col>
                   <Col xs={12} md={3}> 
-                    <FormGroup controlId="emissao" validationState="success">
+                    <FormGroup controlId="data" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleChange} />
+                      <DatePicker ref="data" value={this.state.emissao} onChange={this.handleChange} />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
                   <Col xs={12} md={1}>Cheque</Col>
                   <Col xs={12} md={3}>
-                    <FormGroup controlId="numero" validationState="success">
+                    <FormGroup controlId="cheque" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl ref="numero" type="text" value={this.state.numero} onChange={this.handleChange} />
+                      <FormControl ref="cheque" type="text" value={this.state.numero} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="emissao" validationState="success">
-                      <Checkbox validationState="success" id="liquidado" defaultChecked={this.state.liquidado} onChange={this.handleCheckboxChange} >
+                    <FormGroup controlId="liquidado" validationState="success">
+                      <Checkbox validationState="warning" id="liquidado" defaultChecked={this.state.liquidado} onChange={this.handleCheckboxChange} >
                         Liquidado ?
                       </Checkbox>     
                     </FormGroup>
@@ -398,11 +422,11 @@ http://127.0.0.1:3000/
                   <Col xs={12} md={3}>
                     <FormGroup>
                       <Radio inline>
-                        1
+                        Debito
                       </Radio>
                       {' '}
                       <Radio inline>
-                        2
+                        Credito
                       </Radio>
                       {' '}
                     </FormGroup>

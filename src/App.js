@@ -91,7 +91,8 @@ export default class App extends Component {
               <MovimentoInclusao
                 clientId={this.state.clientId}
                 nome="Inclusão de Movimento"
-                onClose={this.handleClose.bind(this)} 
+                onClose={this.handleClose.bind(this)}
+                config={this.state.config} 
               >
                   <span>Algo deu errado para achar o form MovimentoInclusao</span>
                    
