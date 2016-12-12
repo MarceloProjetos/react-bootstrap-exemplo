@@ -29,7 +29,7 @@ export default class LancamentoForm extends Component {
     this.state = { 
       _id: null,
       conta: 0, // conta selecionada
-      emissao: new Date().toISOString(),
+      data: new Date().toISOString(),
       cheque: '',
       liquidado: false,
       valor: '',
@@ -39,18 +39,20 @@ export default class LancamentoForm extends Component {
       topics: {}
     }
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleIncluido = this.handleIncluido.bind(this);
-
-    this.handleError = this.handleError.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleSaveOk = this.handleSaveOk.bind(this);
-
+    this.handleChangeData   = this.handleChangeData.bind(this);
+    this.handleChangeCheque = this.handleChangeCheque.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-    this.console_log = this.console_log.bind(this);
+    this.handleChangeValor  = this.handleChangeValor.bind(this);
+    this.handleChangeObs    = this.handleChangeObs.bind(this);
 
-    this.handleContaChange = this.handleContaChange.bind(this);
+    this.handleIncluido     = this.handleIncluido.bind(this);
 
+    this.handleError        = this.handleError.bind(this);
+    this.handleSave         = this.handleSave.bind(this);
+    this.handleSaveOk       = this.handleSaveOk.bind(this);
+
+    this.console_log        = this.console_log.bind(this);
+    this.handleContaChange  = this.handleContaChange.bind(this);
     this.mostraContaSelecionada = this.mostraContaSelecionada.bind(this);
   }
 
@@ -141,17 +143,6 @@ export default class LancamentoForm extends Component {
     alert('Erro: ' + msg);
   }
 
-  console_log(msg) {
-    console.log('Modou:' + this.state.liquidado)
-  }
-
-  handleCheckboxChange(value) {
-    console.log('Antes: ' + this.state.liquidado)
-    this.setState({liquidado: !this.state.liquidado}, 
-      this.console_log)
-    console.log('Depois: ' + this.state.liquidado)
-  }
-
   handleSave(data) {
     //alert(JSON.stringify(this.state, null, 2));
     this.client.subscribe('financeiro/lancamento/alterado/' + this.state._id, function(err, granted) {
@@ -171,6 +162,10 @@ export default class LancamentoForm extends Component {
     }.bind(this));    
   }
 
+  handleChangeData(event) {
+    this.setState({ data: event.target.value })
+  }
+
   handleSaveOk(msg) {
     alert('Salvo com sucesso: ' + msg);
   }
@@ -178,14 +173,42 @@ export default class LancamentoForm extends Component {
   handleIncluido(msg) {
     let contas = JSON.parse(msg);
     this.setState({contas: contas, conta: Array.isArray(contas) && contas.length ? msg[0]._id : 0});
-    alert('incluido: ' + msg);
+    //alert('incluido: ' + msg);
   }
 
-  handleChange(value) {
-    // value is an ISO String. 
-    this.setState({
-      [value.target.id]: value.target.value
-    });
+  console_log(msg) {
+    console.log('Modou:' + this.state.liquidado)
+  }
+
+  handleCheckboxChange(value) {
+    console.log('Antes: ' + this.state.liquidado)
+    this.setState({liquidado: !this.state.liquidado}, 
+      this.console_log)
+    console.log('Depois: ' + this.state.liquidado)
+  }
+
+  handleChangeValor(event) {
+    this.setState({ valor: event.target.value })
+  }
+
+  handleChangeCheque(event) {
+    this.setState({ cheque: event.target.value })
+  }
+
+  handleChangeObs(event) {
+    this.setState({ observacao: event.target.value })
+  }
+
+  ChequeValidationState() {
+    var regex = /^\$?[0-9]+((\-[0-9][0-9])|(\-[0-9]))?$/;
+    const length = this.state.cheque.length;
+    if ((length===1)||(length===0)){
+        return 'warning';
+    } else if(regex.test(this.state.cheque)&&(length<20)) {
+        return 'success';
+    } else {
+        return 'error';
+    }
   }
 
 
@@ -226,16 +249,15 @@ export default class LancamentoForm extends Component {
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="data" value={this.state.emissao} onChange={this.handleChange} />
+                      <DatePicker ref="data" value={this.state.data} onChange={this.handleChangeData} />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
                   <Col xs={12} md={1}>Cheque</Col>
                   <Col xs={12} md={3}>
-                    <FormGroup controlId="cheque" validationState="success">
-                      {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl ref="cheque" type="text" value={this.state.cheque} onChange={this.handleChange} />
+                    <FormGroup controlId="cheque" validationState={this.ChequeValidationState()}>
+                      <FormControl ref="cheque" type="text" value={this.state.cheque} onChange={this.handleChangeCheque} placeholder="Numero"/>
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
@@ -252,7 +274,7 @@ export default class LancamentoForm extends Component {
                   <Col xs={12} md={3}>
                     <FormGroup controlId="valor" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" ref="valor" value={this.state.valor} onChange={this.handleChange} />
+                      <FormControl type="text" ref="valor" value={this.state.valor} onChange={this.handleChangeValor} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
@@ -278,7 +300,7 @@ export default class LancamentoForm extends Component {
                   <Col xs={12} md={7}>
                     <FormGroup controlId="observacao" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" ref="observacao" value={this.state.observacao} onChange={this.handleChange} />
+                      <FormControl type="text" ref="observacao" value={this.state.observacao} onChange={this.handleChangeObs} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
